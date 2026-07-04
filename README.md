@@ -1,60 +1,103 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Winner Marketplace
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Single-vendor digital-products store for Winner Devs applications (news portals, POS,
+inventory, HRM, …). Customers browse, pay with SSLCommerz (bKash / Nagad / Rocket / cards)
+or arrange manual payment, and receive their **license and downloads automatically** through
+the companion **License Manager** application.
 
-## About Laravel
+## How the pieces fit
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```
+Customer ──► Marketplace ──► SSLCommerz (hosted checkout + server-side validation)
+                 │
+                 └──► License Manager  POST /api/licenses  (Bearer token)
+                          └──► emails the customer their license key + one-time credentials link
+Customer ──► My Downloads (signed, expiring links; all versions, forever)
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- The **product slug here must exactly match** the product slug in the License Manager —
+  it is the join key used when provisioning licenses.
+- Payment truth comes **only** from the SSLCommerz validation API. Redirects and IPN posts
+  are hints; amount, currency, and transaction ID are re-checked server-side.
+- If the License Manager is unreachable after a payment, the order stays `paid` with a
+  provisioning-failed flag and an idempotent **Retry Provisioning** button — money is never
+  in an ambiguous state, and retries never create duplicate licenses.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Local setup
 
-## Learning Laravel
+```bash
+composer install
+cp .env.example .env && php artisan key:generate
+# set DB_* in .env (MySQL), then:
+php artisan migrate --seed        # seeds the initial super admin
+php artisan storage:link
+npm install && npm run build
+php artisan serve
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Log in at `/admin` with the seeded super admin (see `database/seeders/DatabaseSeeder.php`)
+and **change the password immediately**.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Environment variables
 
-## Laravel Sponsors
+| Variable | Purpose |
+|---|---|
+| `APP_URL` | Must be the real public URL in production — used for signed download links, payment callbacks, and emails. |
+| `LICENSE_MANAGER_URL` | Base URL of the License Manager (no trailing slash). |
+| `LICENSE_MANAGER_TOKEN` | Bearer token for `POST /api/licenses`; must equal `ADMIN_API_TOKEN` in the License Manager's `.env`. Generate: `php -r "echo bin2hex(random_bytes(32));"` |
+| `SSLCZ_STORE_ID` / `SSLCZ_STORE_PASSWORD` | SSLCommerz merchant credentials. |
+| `SSLCZ_SANDBOX` | `true` for the sandbox gateway, `false` for live. |
+| `MAIL_*` | Real SMTP in production — order and contact emails are sent synchronously. |
+| `MYSQLDUMP_PATH` | Full path to `mysqldump` if not on PATH (XAMPP: `D:/xampp/mysql/bin/mysqldump.exe`). |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Secrets live **only** in `.env` — never commit it. The admin Settings page shows
+configured/not-configured status without revealing values.
 
-### Premium Partners
+## Backups
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+`php artisan backup:run` dumps the database and zips all release files into
+`storage/app/private/backups`, keeping the newest 7 of each. It is scheduled daily at 03:30;
+the scheduler needs a cron entry (see checklist). Download the backups off-server regularly —
+a backup on the same disk is only half a backup.
 
-## Contributing
+## Deployment (GitHub Actions → cPanel)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+`.github/workflows/deploy.yml` zips the repo on push to `main` and extracts it into the
+cPanel directory. Because of that:
 
-## Code of Conduct
+- `vendor/` and `public/build/` are **committed** so the server needs neither Composer nor Node.
+  Run `npm run build` and commit before pushing UI changes.
+- `.env` is **not** in the repo (and must never be). Create it once on the server with
+  production values; deploys won't touch it.
+- The domain's document root must point at the app's `public/` folder.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Go-live checklist
 
-## Security Vulnerabilities
+1. **Domain + HTTPS** — point the document root at `public/`, install the SSL certificate,
+   set `APP_URL=https://...` and `APP_ENV=production`, `APP_DEBUG=false`.
+2. **Server `.env`** — copy `.env.example`, fill production values, `php artisan key:generate`.
+   Set `SESSION_SECURE_COOKIE=true`.
+3. **License Manager** — deploy it, set its `ADMIN_API_TOKEN` (same value as
+   `LICENSE_MANAGER_TOKEN` here), real SMTP, and correct `APP_URL` there too.
+   Cross-check every product slug matches.
+4. **SSLCommerz** — sandbox first: `SSLCZ_SANDBOX=true` + sandbox credentials, run a full
+   test purchase. Then live credentials, `SSLCZ_SANDBOX=false`, and make **one real small
+   purchase and refund it** to verify the whole loop including the refund flow.
+5. **Mail** — real SMTP on both apps; send a test order and confirm both emails arrive
+   (order email from the marketplace, credentials email from the License Manager).
+6. **Cron** — cPanel cron job: `* * * * * php /path/to/artisan schedule:run >> /dev/null 2>&1`
+   (drives the nightly backups).
+7. **Caches** — after each deploy: `php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force`.
+8. **Accounts** — change the seeded super admin password; create staff accounts as needed.
+9. **Content** — Settings: store name, support email, payment instructions. Review the
+   About/Terms/Privacy/Refund pages. Submit `/sitemap.xml` to Google Search Console.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tests
 
-## License
+```bash
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# winner-market-place
+Covers role access, catalog CRUD + uploads, checkout, the full order/provisioning flow
+(success, failure, idempotent retry), download authorization, payment validation
+(forged redirects, amount tampering, IPN races), static pages, invoices, and backups.

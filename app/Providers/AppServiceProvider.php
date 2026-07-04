@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Production runs behind HTTPS; signed download URLs and payment
+        // callbacks must be generated with the https scheme.
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

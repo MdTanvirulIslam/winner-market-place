@@ -25,15 +25,17 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 // SSLCommerz callbacks — cross-site POSTs, CSRF-exempt (see bootstrap/app.php),
 // no auth (the browser POST arrives without session cookies). Validation is
 // server-side; GET fallbacks cover gateways/users hitting them directly.
-Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success'])->name('payment.success');
-Route::match(['get', 'post'], '/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
-Route::match(['get', 'post'], '/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
-Route::post('/payment/ipn', [PaymentController::class, 'ipn'])->name('payment.ipn');
+Route::middleware('throttle:60,1')->group(function () {
+    Route::match(['get', 'post'], '/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+    Route::match(['get', 'post'], '/payment/fail', [PaymentController::class, 'fail'])->name('payment.fail');
+    Route::match(['get', 'post'], '/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+    Route::post('/payment/ipn', [PaymentController::class, 'ipn'])->name('payment.ipn');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/{product:slug}', [CheckoutController::class, 'show'])->name('store.checkout');
-    Route::post('/checkout/{product:slug}', [CheckoutController::class, 'store'])->name('store.checkout.store');
-    Route::post('/payment/{order}/start', [PaymentController::class, 'start'])->name('payment.start');
+    Route::post('/checkout/{product:slug}', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('store.checkout.store');
+    Route::post('/payment/{order}/start', [PaymentController::class, 'start'])->middleware('throttle:10,1')->name('payment.start');
 
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/account/orders/{order}', [AccountController::class, 'order'])->name('account.orders.show');

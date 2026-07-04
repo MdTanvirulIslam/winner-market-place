@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
         // SSLCommerz posts back from its own domain — no CSRF token there.
         // Payment truth is established by server-side validation instead.
         $middleware->validateCsrfTokens(except: [

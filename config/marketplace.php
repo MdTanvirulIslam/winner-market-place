@@ -35,4 +35,16 @@ return [
         'sandbox' => env('SSLCZ_SANDBOX', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Backups
+    |--------------------------------------------------------------------------
+    */
+
+    'backup' => [
+        // Full path when the binary isn't on PATH (e.g. XAMPP:
+        // D:\xampp\mysql\bin\mysqldump.exe).
+        'mysqldump_path' => env('MYSQLDUMP_PATH', 'mysqldump'),
+    ],
+
 ];
