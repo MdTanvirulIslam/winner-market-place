@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,11 +16,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Initial super admin — change the password after first login.
+        User::firstOrCreate(
+            ['email' => 'admin@winnerdevs.com'],
+            [
+                'name' => 'Winner Devs Admin',
+                'password' => Hash::make('password'),
+                'role' => 'super_admin',
+            ]
+        );
     }
 }
