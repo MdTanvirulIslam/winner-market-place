@@ -5,17 +5,16 @@
             <span class="icon nav-icon" data-icon="house"></span><span class="link-text">Dashboard</span>
         </a>
 
-        {{-- Catalog and sales sections arrive in Phase 1 and 2. --}}
         <div class="sidebar-label">Catalog</div>
-        <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 1">
-            <span class="icon nav-icon" data-icon="layout-template"></span><span class="link-text">Categories</span><span class="sidebar-meta">P1</span>
-        </span>
-        <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 1">
-            <span class="icon nav-icon" data-icon="boxes"></span><span class="link-text">Products</span><span class="sidebar-meta">P1</span>
-        </span>
-        <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 1">
-            <span class="icon nav-icon" data-icon="download"></span><span class="link-text">Releases</span><span class="sidebar-meta">P1</span>
-        </span>
+        <a class="sidebar-link{{ request()->routeIs('admin.categories.*') ? ' active' : '' }}" href="{{ route('admin.categories.index') }}" @if(request()->routeIs('admin.categories.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="layout-template"></span><span class="link-text">Categories</span>
+        </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.products.*') ? ' active' : '' }}" href="{{ route('admin.products.index') }}" @if(request()->routeIs('admin.products.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="boxes"></span><span class="link-text">Products</span>
+        </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.releases.*') ? ' active' : '' }}" href="{{ route('admin.releases.index') }}" @if(request()->routeIs('admin.releases.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="download"></span><span class="link-text">Releases</span>
+        </a>
 
         <div class="sidebar-label">Sales</div>
         <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 2">

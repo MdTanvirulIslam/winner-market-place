@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Store\StoreController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [StoreController::class, 'home'])->name('home');
+Route::get('/products', [StoreController::class, 'index'])->name('store.products');
+Route::get('/products/{product:slug}', [StoreController::class, 'show'])->name('store.products.show');
 
 // Breeze and framework code link to the generic "dashboard" route; send each
 // role where it belongs instead of keeping a separate page here.

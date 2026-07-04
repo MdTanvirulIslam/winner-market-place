@@ -1,0 +1,162 @@
+<?php
+
+namespace Tests\Feature\Admin;
+
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\Release;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
+
+class CatalogTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function staff(): User
+    {
+        return User::factory()->create(['role' => 'staff']);
+    }
+
+    public function test_customers_cannot_access_catalog_admin(): void
+    {
+        $customer = User::factory()->create(['role' => 'customer']);
+
+        $this->actingAs($customer)->get('/admin/products')->assertForbidden();
+        $this->actingAs($customer)->get('/admin/categories')->assertForbidden();
+        $this->actingAs($customer)->get('/admin/releases')->assertForbidden();
+    }
+
+    public function test_staff_can_create_a_category(): void
+    {
+        $this->actingAs($this->staff())->post('/admin/categories', [
+            'name' => 'News Portals',
+            'slug' => 'news-portals',
+            'description' => 'Publishing platforms.',
+        ])->assertRedirect(route('admin.categories.index'));
+
+        $this->assertDatabaseHas('categories', ['slug' => 'news-portals']);
+    }
+
+    public function test_invalid_slugs_are_rejected(): void
+    {
+        $this->actingAs($this->staff())->post('/admin/categories', [
+            'name' => 'Bad Slug',
+            'slug' => 'Bad Slug!',
+        ])->assertSessionHasErrors('slug');
+    }
+
+    public function test_staff_can_create_a_product_with_screenshots(): void
+    {
+        Storage::fake('public');
+        $category = Category::factory()->create();
+
+        $response = $this->actingAs($this->staff())->post('/admin/products', [
+            'category_id' => $category->id,
+            'name' => 'News Portal',
+            'slug' => 'news-portal',
+            'short_description' => 'A modern news publishing platform.',
+            'description' => 'Full description here.',
+            'features' => "Fast\nSecure",
+            'requirements' => "PHP 8.2+",
+            'price' => 15000,
+            'sale_price' => 12000,
+            'status' => 'published',
+            'images' => [
+                UploadedFile::fake()->image('shot1.png', 1280, 800),
+                UploadedFile::fake()->image('shot2.png', 1280, 800),
+            ],
+        ]);
+
+        $product = Product::where('slug', 'news-portal')->first();
+        $this->assertNotNull($product);
+        $response->assertRedirect(route('admin.products.edit', $product));
+
+        $this->assertCount(2, $product->images);
+        Storage::disk('public')->assertExists($product->images->first()->path);
+    }
+
+    public function test_sale_price_must_be_below_price(): void
+    {
+        $this->actingAs($this->staff())->post('/admin/products', [
+            'name' => 'Overpriced Sale',
+            'slug' => 'overpriced-sale',
+            'short_description' => 'x',
+            'price' => 100,
+            'sale_price' => 150,
+            'status' => 'draft',
+        ])->assertSessionHasErrors('sale_price');
+    }
+
+    public function test_staff_can_upload_a_release_stored_on_the_private_disk(): void
+    {
+        Storage::fake('local');
+        $product = Product::factory()->create(['slug' => 'news-portal']);
+
+        $this->actingAs($this->staff())->post('/admin/releases', [
+            'product_id' => $product->id,
+            'version' => '1.0.0',
+            'notes' => 'Initial release.',
+            'file' => UploadedFile::fake()->create('news-portal.zip', 2048, 'application/zip'),
+        ])->assertRedirect(route('admin.releases.index'));
+
+        $release = Release::where('product_id', $product->id)->first();
+        $this->assertNotNull($release);
+        $this->assertSame('releases/news-portal/news-portal-1.0.0.zip', $release->file_path);
+        $this->assertSame(0, $release->download_count);
+
+        // On the private local disk, not the public one.
+        Storage::disk('local')->assertExists($release->file_path);
+    }
+
+    public function test_duplicate_versions_per_product_are_rejected(): void
+    {
+        Storage::fake('local');
+        $product = Product::factory()->create();
+        Release::factory()->create(['product_id' => $product->id, 'version' => '1.0.0']);
+
+        $this->actingAs($this->staff())->post('/admin/releases', [
+            'product_id' => $product->id,
+            'version' => '1.0.0',
+            'file' => UploadedFile::fake()->create('app.zip', 100, 'application/zip'),
+        ])->assertSessionHasErrors('version');
+    }
+
+    public function test_non_zip_release_uploads_are_rejected(): void
+    {
+        Storage::fake('local');
+        $product = Product::factory()->create();
+
+        $this->actingAs($this->staff())->post('/admin/releases', [
+            'product_id' => $product->id,
+            'version' => '1.0.0',
+            'file' => UploadedFile::fake()->create('app.exe', 100, 'application/octet-stream'),
+        ])->assertSessionHasErrors('file');
+    }
+
+    public function test_deleting_a_screenshot_removes_the_file(): void
+    {
+        Storage::fake('public');
+        $staff = $this->staff();
+        $product = Product::factory()->create();
+
+        $this->actingAs($staff)->patch(route('admin.products.update', $product), [
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'short_description' => $product->short_description,
+            'price' => $product->price,
+            'status' => $product->status,
+            'images' => [UploadedFile::fake()->image('shot.png')],
+        ]);
+
+        $image = $product->images()->first();
+        $this->assertNotNull($image);
+
+        $this->actingAs($staff)->delete(route('admin.products.images.destroy', [$product, $image]));
+
+        Storage::disk('public')->assertMissing($image->path);
+        $this->assertNull($image->fresh());
+    }
+}

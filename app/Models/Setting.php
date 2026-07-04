@@ -12,15 +12,23 @@ class Setting extends Model
         'currency',
     ];
 
+    private static ?self $cached = null;
+
     /**
-     * The single settings row, created with defaults on first access.
+     * The single settings row, created with defaults on first access and
+     * memoized for the rest of the request.
      */
     public static function current(): self
     {
-        return static::firstOrCreate(['id' => 1], [
+        return static::$cached ??= static::firstOrCreate(['id' => 1], [
             'store_name' => config('app.name'),
             'support_email' => '',
             'currency' => 'BDT',
         ]);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => static::$cached = null);
     }
 }

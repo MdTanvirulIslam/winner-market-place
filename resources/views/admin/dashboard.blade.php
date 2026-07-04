@@ -18,9 +18,9 @@
             <div class="stat-card" style="--card-accent:#06b6d4;">
                 <div class="stat-card-header">
                     <div class="stat-card-icon" style="background:rgba(6,182,212,0.1);color:#06b6d4;"><span class="icon" data-icon="boxes"></span></div>
-                    <span class="stat-card-badge" style="background:rgba(245,158,11,0.1);color:#d97706;">Phase 1</span>
+                    <span class="stat-card-badge" style="background:rgba(34,197,94,0.1);color:#16a34a;">{{ $publishedCount }} live</span>
                 </div>
-                <div class="stat-card-value">0</div>
+                <div class="stat-card-value">{{ number_format($productCount) }}</div>
                 <div class="stat-card-label">Products</div>
             </div>
         </div>
@@ -55,7 +55,7 @@
                         <thead><tr><th>Phase</th><th>Scope</th><th>Status</th></tr></thead>
                         <tbody>
                             <tr><td class="font-semibold">Phase 0</td><td>Foundation — auth, roles, admin panel</td><td><span class="status-badge success">Done</span></td></tr>
-                            <tr><td class="font-semibold">Phase 1</td><td>Catalog — categories, products, releases + public store</td><td><span class="status-badge pending">Next</span></td></tr>
+                            <tr><td class="font-semibold">Phase 1</td><td>Catalog — categories, products, releases + public store</td><td><span class="status-badge success">Done</span></td></tr>
                             <tr><td class="font-semibold">Phase 2</td><td>Orders &amp; manual selling + license provisioning</td><td><span class="status-badge pending">Planned</span></td></tr>
                             <tr><td class="font-semibold">Phase 3</td><td>SSLCommerz online payments</td><td><span class="status-badge pending">Planned</span></td></tr>
                         </tbody>
