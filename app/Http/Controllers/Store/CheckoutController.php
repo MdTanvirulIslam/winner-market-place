@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlacedMail;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Throwable;
 
 class CheckoutController extends Controller
 {
@@ -59,6 +62,12 @@ class CheckoutController extends Controller
             'status' => 'pending',
             'payment_method' => 'manual',
         ]);
+
+        try {
+            Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
+        } catch (Throwable $e) {
+            report($e); // the order page shows the same instructions anyway
+        }
 
         return redirect()->route('account.orders.show', $order)
             ->with('success', 'Order placed! Follow the payment instructions to complete your purchase.');

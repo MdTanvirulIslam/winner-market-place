@@ -31,6 +31,17 @@ class AccountController extends Controller
         ]);
     }
 
+    public function invoice(Request $request, Order $order): View
+    {
+        abort_unless($order->user_id === $request->user()->id, 404);
+        abort_unless(in_array($order->status, ['paid', 'delivered', 'refunded'], true), 404);
+
+        return view('account.invoice', [
+            'order' => $order,
+            'setting' => Setting::current(),
+        ]);
+    }
+
     public function downloads(Request $request): View
     {
         $orders = Order::where('user_id', $request->user()->id)

@@ -5,9 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) && $title ? $title . ' — ' : '' }}{{ config('app.name') }}</title>
-    @isset($metaDescription)
+    @if(!empty($metaDescription))
         <meta name="description" content="{{ $metaDescription }}">
-    @endisset
+    @endif
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ isset($title) && $title ? $title . ' — ' : '' }}{{ config('app.name') }}">
+    @if(!empty($metaDescription))
+        <meta property="og:description" content="{{ $metaDescription }}">
+    @endif
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if(!empty($ogImage))
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta name="twitter:card" content="summary_large_image">
+    @endif
     <script>
         if (localStorage.getItem('winnerTAM-dark') === 'true') {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -22,6 +34,8 @@
             <nav class="hidden items-center gap-6 text-sm font-semibold text-text md:flex">
                 <a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'text-accent' : '' }}">Home</a>
                 <a href="{{ route('store.products') }}" class="{{ request()->routeIs('store.products*') ? 'text-accent' : '' }}">Products</a>
+                <a href="{{ route('store.about') }}" class="{{ request()->routeIs('store.about') ? 'text-accent' : '' }}">About</a>
+                <a href="{{ route('store.contact') }}" class="{{ request()->routeIs('store.contact') ? 'text-accent' : '' }}">Contact</a>
             </nav>
             <div class="flex items-center gap-2">
                 <button class="topbar-btn" id="darkModeToggle" aria-label="Toggle dark mode"><span class="icon" id="darkModeToggleIcon" data-icon="moon"></span></button>
@@ -53,18 +67,22 @@
                 <h5 class="mb-3 text-sm font-bold text-text">Store</h5>
                 <div class="space-y-2 text-[13px] text-muted">
                     <a class="block hover:text-accent" href="{{ route('store.products') }}">All Products</a>
-                    <a class="block hover:text-accent" href="{{ route('store.products', ['sort' => 'price_asc']) }}">Lowest Price First</a>
-                </div>
-            </div>
-            <div>
-                <h5 class="mb-3 text-sm font-bold text-text">Account</h5>
-                <div class="space-y-2 text-[13px] text-muted">
+                    <a class="block hover:text-accent" href="{{ route('store.about') }}">About Us</a>
+                    <a class="block hover:text-accent" href="{{ route('store.contact') }}">Contact</a>
                     @auth
-                        <a class="block hover:text-accent" href="{{ route('profile.edit') }}">My Profile</a>
+                        <a class="block hover:text-accent" href="{{ route('account.orders') }}">My Account</a>
                     @else
                         <a class="block hover:text-accent" href="{{ route('login') }}">Login</a>
                         <a class="block hover:text-accent" href="{{ route('register') }}">Register</a>
                     @endauth
+                </div>
+            </div>
+            <div>
+                <h5 class="mb-3 text-sm font-bold text-text">Legal</h5>
+                <div class="space-y-2 text-[13px] text-muted">
+                    <a class="block hover:text-accent" href="{{ route('store.terms') }}">Terms of Service</a>
+                    <a class="block hover:text-accent" href="{{ route('store.privacy') }}">Privacy Policy</a>
+                    <a class="block hover:text-accent" href="{{ route('store.refund-policy') }}">Refund Policy</a>
                 </div>
             </div>
         </div>

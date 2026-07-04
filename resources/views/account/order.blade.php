@@ -8,7 +8,12 @@
                 <h2 class="font-heading text-xl font-extrabold text-text">{{ $order->order_no }}</h2>
                 <p class="text-[13px] text-muted">Placed {{ $order->created_at->format('d M Y, H:i') }}</p>
             </div>
-            <span class="status-badge {{ $order->statusBadgeClass() }}">{{ ucfirst($order->status) }}</span>
+            <div class="flex items-center gap-3">
+                @if(in_array($order->status, ['paid', 'delivered', 'refunded'], true))
+                    <a href="{{ route('account.orders.invoice', $order) }}" class="rounded-lg border px-4 py-2 text-[13px] font-semibold text-text transition-colors duration-300 hover:border-accent hover:text-accent" style="border-color:var(--border);">Invoice</a>
+                @endif
+                <span class="status-badge {{ $order->statusBadgeClass() }}">{{ ucfirst($order->status) }}</span>
+            </div>
         </div>
 
         <div class="grid gap-4 md:grid-cols-2">

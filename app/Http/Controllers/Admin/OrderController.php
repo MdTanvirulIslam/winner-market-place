@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderPlacedMail;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
@@ -11,8 +12,10 @@ use App\Services\OrderFlow;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -89,6 +92,12 @@ class OrderController extends Controller
             'status' => 'pending',
             'payment_method' => 'manual',
         ]);
+
+        try {
+            Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
+        } catch (Throwable $e) {
+            report($e);
+        }
 
         $message = 'Order ' . $order->order_no . ' created.';
         if ($created) {

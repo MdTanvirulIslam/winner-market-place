@@ -1,4 +1,4 @@
-<x-store-layout :title="$product->name" :meta-description="$product->short_description">
+<x-store-layout :title="$product->name" :meta-description="$product->short_description" :og-image="$product->images->first()?->url()">
     <div class="mx-auto max-w-6xl px-4 py-10">
         {{-- Breadcrumb --}}
         <nav class="mb-6 flex items-center gap-2 text-[13px] text-muted">
