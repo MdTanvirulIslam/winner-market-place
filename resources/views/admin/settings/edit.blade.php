@@ -1,6 +1,7 @@
 <x-admin-layout title="Settings">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Admin' => null, 'Settings' => null]" />
             <h4>Settings</h4>
             <p class="text-[13px] text-muted">Store preferences and integration status.</p>
         </div>

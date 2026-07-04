@@ -1,6 +1,7 @@
 <x-admin-layout title="Customers">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Sales' => null, 'Customers' => null]" />
             <h4>Customers</h4>
             <p class="text-[13px] text-muted">Everyone with a store account.</p>
         </div>
@@ -25,7 +26,12 @@
                 <tbody>
                     @forelse($customers as $customer)
                         <tr>
-                            <td class="font-semibold">{{ $customer->name }}</td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white" style="background:linear-gradient(135deg,#14b8a6,#0d9488);">{{ strtoupper(substr($customer->name, 0, 1)) }}</div>
+                                    <span class="font-semibold">{{ $customer->name }}</span>
+                                </div>
+                            </td>
                             <td>{{ $customer->email }}</td>
                             <td>{{ $customer->orders_count }}</td>
                             <td>{{ $customer->created_at->format('d M Y') }}</td>

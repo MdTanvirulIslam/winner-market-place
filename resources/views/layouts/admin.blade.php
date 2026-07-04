@@ -30,6 +30,8 @@
         </footer>
     </div>
 
+    <div class="modal-overlay" id="modalOverlay"></div>
+
     <div class="offcanvas-overlay" id="offcanvasOverlay"></div>
 
     <aside class="offcanvas-panel" id="offcanvasPanel" role="complementary" aria-label="Settings panel">

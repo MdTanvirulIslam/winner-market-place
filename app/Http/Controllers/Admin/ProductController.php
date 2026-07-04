@@ -15,7 +15,7 @@ class ProductController extends Controller
 {
     public function index(Request $request): View
     {
-        $products = Product::with('category')
+        $products = Product::with(['category', 'images'])
             ->withCount('releases')
             ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->q . '%')

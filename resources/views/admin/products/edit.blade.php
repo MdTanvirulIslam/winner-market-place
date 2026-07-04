@@ -1,6 +1,7 @@
 <x-admin-layout title="Edit Product">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Products' => route('admin.products.index'), $product->name => null]" />
             <h4>Edit Product</h4>
             <p class="text-[13px] text-muted">{{ $product->name }} — <code>{{ $product->slug }}</code></p>
         </div>
@@ -35,11 +36,7 @@
                         <div class="mb-3 flex items-center gap-3 border-b pb-3 last:border-b-0" style="border-color:var(--border);">
                             <img src="{{ $image->url() }}" alt="Screenshot" class="h-14 w-24 rounded-sm object-cover">
                             <span class="flex-1 text-[12px] text-muted">#{{ $image->sort_order }}</span>
-                            <form method="POST" action="{{ route('admin.products.images.destroy', [$product, $image]) }}" onsubmit="return confirm('Remove this screenshot?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-[13px] font-semibold text-danger">Remove</button>
-                            </form>
+                            <button type="button" data-modal-open="delete-image-{{ $image->id }}" class="text-[13px] font-semibold text-danger">Remove</button>
                         </div>
                     @empty
                         <p class="text-[13px] text-muted">No screenshots yet — add some in the form.</p>
@@ -65,4 +62,14 @@
             </div>
         </div>
     </div>
+
+    @foreach($product->images as $image)
+        <x-confirm-modal
+            id="delete-image-{{ $image->id }}"
+            title="Remove this screenshot?"
+            message="The image file will be deleted from the server."
+            :action="route('admin.products.images.destroy', [$product, $image])"
+            method="DELETE"
+            confirm-label="Remove Screenshot" />
+    @endforeach
 </x-admin-layout>

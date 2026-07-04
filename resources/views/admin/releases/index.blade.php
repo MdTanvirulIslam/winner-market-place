@@ -1,6 +1,7 @@
 <x-admin-layout title="Releases">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Catalog' => null, 'Releases' => null]" />
             <h4>Releases</h4>
             <p class="text-[13px] text-muted">Versioned product zips. Files are stored outside the web root and served only through authorized downloads.</p>
         </div>
@@ -41,11 +42,7 @@
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
                                     <a href="{{ route('admin.releases.edit', $release) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <form method="POST" action="{{ route('admin.releases.destroy', $release) }}" onsubmit="return confirm('Delete v{{ $release->version }} of {{ $release->product->name }}? The zip file will be removed.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-[13px] font-semibold text-danger">Delete</button>
-                                    </form>
+                                    <button type="button" data-modal-open="delete-release-{{ $release->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -58,4 +55,14 @@
     </div>
 
     <div class="mt-4">{{ $releases->links() }}</div>
+
+    @foreach($releases as $release)
+        <x-confirm-modal
+            id="delete-release-{{ $release->id }}"
+            title="Delete v{{ $release->version }} of {{ $release->product->name }}?"
+            message="The zip file will be removed from the server and customers will no longer be able to download this version."
+            :action="route('admin.releases.destroy', $release)"
+            method="DELETE"
+            confirm-label="Delete Release" />
+    @endforeach
 </x-admin-layout>

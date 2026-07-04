@@ -1,6 +1,7 @@
 <x-admin-layout title="Edit Admin User">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Admin Users' => route('admin.users.index'), $user->name => null]" />
             <h4>Edit Admin User</h4>
             <p class="text-[13px] text-muted">{{ $user->name }} ({{ $user->email }})</p>
         </div>

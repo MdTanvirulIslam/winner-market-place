@@ -1,6 +1,7 @@
 <x-admin-layout title="Orders">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Sales' => null, 'Orders' => null]" />
             <h4>Orders</h4>
             <p class="text-[13px] text-muted">All sales — gateway and manual.</p>
         </div>

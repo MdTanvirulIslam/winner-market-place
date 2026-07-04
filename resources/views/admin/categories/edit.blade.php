@@ -1,8 +1,8 @@
 <x-admin-layout title="Edit Category">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Categories' => route('admin.categories.index'), $category->name => null]" />
             <h4>Edit Category</h4>
-            <p class="text-[13px] text-muted">{{ $category->name }}</p>
         </div>
     </div>
 

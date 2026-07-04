@@ -1,6 +1,7 @@
 <x-admin-layout title="Upload Release">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Releases' => route('admin.releases.index'), 'Upload' => null]" />
             <h4>Upload Release</h4>
             <p class="text-[13px] text-muted">A new downloadable version of a product.</p>
         </div>

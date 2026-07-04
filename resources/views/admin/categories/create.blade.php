@@ -1,6 +1,7 @@
 <x-admin-layout title="New Category">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Categories' => route('admin.categories.index'), 'New' => null]" />
             <h4>New Category</h4>
         </div>
     </div>

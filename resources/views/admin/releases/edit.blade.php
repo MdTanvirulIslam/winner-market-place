@@ -1,6 +1,7 @@
 <x-admin-layout title="Edit Release">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Releases' => route('admin.releases.index'), 'v' . $release->version => null]" />
             <h4>Edit Release</h4>
             <p class="text-[13px] text-muted">{{ $release->product->name }} — v{{ $release->version }} ({{ $release->fileSizeForHumans() }})</p>
         </div>

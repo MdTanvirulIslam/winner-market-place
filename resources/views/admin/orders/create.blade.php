@@ -1,6 +1,7 @@
 <x-admin-layout title="New Manual Order">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Orders' => route('admin.orders.index'), 'New Manual Order' => null]" />
             <h4>New Manual Order</h4>
             <p class="text-[13px] text-muted">For WhatsApp / bank-transfer deals — create the order, then Mark as Paid once the money arrives.</p>
         </div>

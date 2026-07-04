@@ -1,6 +1,7 @@
 <x-admin-layout title="New Admin User">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Admin Users' => route('admin.users.index'), 'New' => null]" />
             <h4>New Admin User</h4>
             <p class="text-[13px] text-muted">Create a staff or super admin account.</p>
         </div>

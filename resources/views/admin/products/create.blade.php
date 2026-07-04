@@ -1,6 +1,7 @@
 <x-admin-layout title="New Product">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Products' => route('admin.products.index'), 'New' => null]" />
             <h4>New Product</h4>
         </div>
     </div>

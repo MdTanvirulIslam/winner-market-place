@@ -1,6 +1,7 @@
 <x-admin-layout title="Categories">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Catalog' => null, 'Categories' => null]" />
             <h4>Categories</h4>
             <p class="text-[13px] text-muted">Group products for browsing and filtering.</p>
         </div>
@@ -22,11 +23,7 @@
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
                                     <a href="{{ route('admin.categories.edit', $category) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm('Delete {{ $category->name }}? Its products will become uncategorized.');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-[13px] font-semibold text-danger">Delete</button>
-                                    </form>
+                                    <button type="button" data-modal-open="delete-category-{{ $category->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -39,4 +36,14 @@
     </div>
 
     <div class="mt-4">{{ $categories->links() }}</div>
+
+    @foreach($categories as $category)
+        <x-confirm-modal
+            id="delete-category-{{ $category->id }}"
+            title="Delete {{ $category->name }}?"
+            message="Its {{ $category->products_count }} {{ Str::plural('product', $category->products_count) }} will become uncategorized. This cannot be undone."
+            :action="route('admin.categories.destroy', $category)"
+            method="DELETE"
+            confirm-label="Delete Category" />
+    @endforeach
 </x-admin-layout>

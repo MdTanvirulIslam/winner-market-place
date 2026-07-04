@@ -7,6 +7,7 @@ import AppUI from './modules/ui.js';
 import AppFullscreen from './modules/fullscreen.js';
 import AppModals from './modules/modals.js';
 import AppToasts from './modules/toasts.js';
+import AppCharts from './modules/charts.js';
 import { renderIcons } from './modules/icons.js';
 
 window.Alpine = Alpine;
@@ -42,6 +43,7 @@ const initApp = () => {
     AppFullscreen.init();
     AppModals.init();
     AppToasts.init();
+    AppCharts.init();
     showFlashToasts();
 
     const sidebar = document.getElementById('sidebar');
@@ -125,6 +127,12 @@ const initApp = () => {
 
         if (target.closest('.sidebar-link') || target.closest('.sidebar-sub-link')) {
             AppUI.closeSidebarMobile();
+            return;
+        }
+
+        const chartButton = target.closest('[data-chart-range]');
+        if (chartButton) {
+            AppCharts.renderChart(chartButton.dataset.chartRange);
             return;
         }
 

@@ -1,6 +1,7 @@
 <x-admin-layout title="Products">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Catalog' => null, 'Products' => null]" />
             <h4>Products</h4>
             <p class="text-[13px] text-muted">The applications you sell. Slugs must match the License Manager.</p>
         </div>
@@ -36,7 +37,18 @@
                 <tbody>
                     @forelse($products as $product)
                         <tr>
-                            <td class="font-semibold">{{ $product->name }}</td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-16 shrink-0 overflow-hidden rounded-sm" style="background:var(--bg-input);">
+                                        @if($product->images->isNotEmpty())
+                                            <img src="{{ $product->images->first()->url() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
+                                        @else
+                                            <div class="flex h-full w-full items-center justify-center text-muted"><span class="icon" data-icon="boxes"></span></div>
+                                        @endif
+                                    </div>
+                                    <span class="font-semibold">{{ $product->name }}</span>
+                                </div>
+                            </td>
                             <td><code>{{ $product->slug }}</code></td>
                             <td>{{ $product->category?->name ?? '—' }}</td>
                             <td class="font-semibold">
@@ -61,11 +73,7 @@
                                         <a href="{{ route('store.products.show', $product->slug) }}" target="_blank" class="text-[13px] font-semibold text-muted">View</a>
                                     @endif
                                     <a href="{{ route('admin.products.edit', $product) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <form method="POST" action="{{ route('admin.products.destroy', $product) }}" onsubmit="return confirm('Delete {{ $product->name }} with all its screenshots and releases?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-[13px] font-semibold text-danger">Delete</button>
-                                    </form>
+                                    <button type="button" data-modal-open="delete-product-{{ $product->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -78,4 +86,14 @@
     </div>
 
     <div class="mt-4">{{ $products->links() }}</div>
+
+    @foreach($products as $product)
+        <x-confirm-modal
+            id="delete-product-{{ $product->id }}"
+            title="Delete {{ $product->name }}?"
+            message="All its screenshots and release files will be removed from the server. Past orders keep their records. This cannot be undone."
+            :action="route('admin.products.destroy', $product)"
+            method="DELETE"
+            confirm-label="Delete Product" />
+    @endforeach
 </x-admin-layout>

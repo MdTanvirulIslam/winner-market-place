@@ -1,6 +1,7 @@
 <x-admin-layout title="Admin Users">
     <div class="page-header animate-in opacity-0">
         <div>
+            <x-breadcrumb :items="['Admin' => null, 'Admin Users' => null]" />
             <h4>Admin Users</h4>
             <p class="text-[13px] text-muted">Staff and super admin accounts for this store.</p>
         </div>
@@ -16,7 +17,12 @@
                 <tbody>
                     @forelse($users as $user)
                         <tr>
-                            <td class="font-semibold">{{ $user->name }}</td>
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white" style="background:linear-gradient(135deg,#a78bfa,#7c3aed);">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+                                    <span class="font-semibold">{{ $user->name }}</span>
+                                </div>
+                            </td>
                             <td>{{ $user->email }}</td>
                             <td>
                                 @if($user->isSuperAdmin())
@@ -30,11 +36,7 @@
                                 <div class="inline-flex items-center gap-2">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="text-[13px] font-semibold text-accent">Edit</a>
                                     @unless($user->is(auth()->user()))
-                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete {{ $user->name }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-[13px] font-semibold text-danger">Delete</button>
-                                        </form>
+                                        <button type="button" data-modal-open="delete-user-{{ $user->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
                                     @endunless
                                 </div>
                             </td>
@@ -48,4 +50,16 @@
     </div>
 
     <div class="mt-4">{{ $users->links() }}</div>
+
+    @foreach($users as $user)
+        @unless($user->is(auth()->user()))
+            <x-confirm-modal
+                id="delete-user-{{ $user->id }}"
+                title="Delete {{ $user->name }}?"
+                message="{{ $user->email }} will lose all admin access immediately. This cannot be undone."
+                :action="route('admin.users.destroy', $user)"
+                method="DELETE"
+                confirm-label="Delete User" />
+        @endunless
+    @endforeach
 </x-admin-layout>

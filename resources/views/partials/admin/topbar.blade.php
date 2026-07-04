@@ -5,6 +5,33 @@
         <div class="topbar-search"><span class="icon search-icon" data-icon="search"></span><input type="text" placeholder="Search..." aria-label="Search"></div>
     </div>
     <div class="topbar-right">
+        <div class="dropdown-wrap">
+            <button class="topbar-btn" data-dropdown="notifications" aria-label="Notifications">
+                <span class="icon" data-icon="bell"></span>
+                @if($notificationCount > 0)
+                    <span class="badge-count">{{ $notificationCount > 99 ? '99+' : $notificationCount }}</span>
+                @endif
+            </button>
+            <div class="dropdown-menu-custom" id="dropdown-notifications" role="menu">
+                <div class="dropdown-header-custom"><h6>Notifications</h6><a href="{{ route('admin.orders.index') }}">Orders</a></div>
+                @forelse($notifications as $notification)
+                    <a href="{{ $notification->url }}" class="dropdown-item-custom">
+                        <div class="dropdown-item-icon" style="{{ $notification->tint }}"><span class="icon" data-icon="{{ $notification->icon }}"></span></div>
+                        <div class="dropdown-item-content">
+                            <p>{{ $notification->title }}</p>
+                            <span>{{ $notification->time?->diffForHumans() }}</span>
+                        </div>
+                    </a>
+                @empty
+                    <div class="dropdown-item-custom">
+                        <div class="dropdown-item-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><span class="icon" data-icon="badge-check"></span></div>
+                        <div class="dropdown-item-content"><p>All caught up</p><span>No new store events.</span></div>
+                    </div>
+                @endforelse
+                <div class="dropdown-footer-custom"><a href="{{ route('admin.orders.index') }}">View All Orders</a></div>
+            </div>
+        </div>
+
         <button class="topbar-btn" id="darkModeToggle" aria-label="Toggle dark mode"><span class="icon" id="darkModeToggleIcon" data-icon="moon"></span></button>
         <button class="topbar-btn" id="fullscreenToggle" aria-label="Toggle fullscreen"><span class="icon" id="fullscreenToggleIcon" data-icon="maximize"></span></button>
 
