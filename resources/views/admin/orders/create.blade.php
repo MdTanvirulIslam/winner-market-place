@@ -36,10 +36,17 @@
                     </div>
                 </div>
 
-                <div>
-                    <label class="panel-label" for="amount">Agreed Amount (optional)</label>
-                    <input class="panel-input mt-1" type="number" step="0.01" min="0" id="amount" name="amount" value="{{ old('amount') }}" placeholder="Leave empty to use the product price">
-                    <x-input-error :messages="$errors->get('amount')" class="mt-2" />
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="panel-label" for="customer_phone">Customer Phone (optional)</label>
+                        <input class="panel-input mt-1" type="tel" id="customer_phone" name="customer_phone" value="{{ old('customer_phone') }}" placeholder="01XXXXXXXXX">
+                        <x-input-error :messages="$errors->get('customer_phone')" class="mt-2" />
+                    </div>
+                    <div>
+                        <label class="panel-label" for="amount">Agreed Amount (optional)</label>
+                        <input class="panel-input mt-1" type="number" step="0.01" min="0" id="amount" name="amount" value="{{ old('amount') }}" placeholder="Leave empty to use the product price">
+                        <x-input-error :messages="$errors->get('amount')" class="mt-2" />
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3">

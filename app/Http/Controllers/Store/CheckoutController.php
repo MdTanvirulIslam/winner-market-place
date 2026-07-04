@@ -26,6 +26,10 @@ class CheckoutController extends Controller
     {
         abort_unless($product->isPublished(), 404);
 
+        $data = $request->validate([
+            'customer_phone' => 'required|string|max:30|regex:/^[0-9+\-\s]{6,}$/',
+        ]);
+
         $user = $request->user();
 
         // Reuse an open pending order for the same product instead of
@@ -36,6 +40,8 @@ class CheckoutController extends Controller
             ->first();
 
         if ($existing) {
+            $existing->update(['customer_phone' => $data['customer_phone']]);
+
             return redirect()->route('account.orders.show', $existing)
                 ->with('info', 'You already have an open order for this product.');
         }
@@ -47,6 +53,7 @@ class CheckoutController extends Controller
             'product_slug' => $product->slug,
             'customer_name' => $user->name,
             'customer_email' => $user->email,
+            'customer_phone' => $data['customer_phone'],
             'amount' => $product->effectivePrice(),
             'currency' => Setting::current()->currency,
             'status' => 'pending',

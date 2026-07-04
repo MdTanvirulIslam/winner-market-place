@@ -38,8 +38,14 @@
                     After placing the order you'll see the payment instructions —
                     once we confirm your payment, downloads unlock automatically.
                 </p>
-                <form method="POST" action="{{ route('store.checkout.store', $product->slug) }}">
+                <form method="POST" action="{{ route('store.checkout.store', $product->slug) }}" class="space-y-4">
                     @csrf
+                    <div>
+                        <label class="panel-label" for="customer_phone">Phone Number</label>
+                        <input class="panel-input mt-1" type="tel" id="customer_phone" name="customer_phone" value="{{ old('customer_phone') }}" placeholder="01XXXXXXXXX" required>
+                        <p class="mt-1 text-[12px] text-muted">Needed by the payment gateway and for order support.</p>
+                        <x-input-error :messages="$errors->get('customer_phone')" class="mt-2" />
+                    </div>
                     <button type="submit" class="w-full rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">
                         Place Order — {{ format_price($product->effectivePrice()) }}
                     </button>

@@ -55,6 +55,7 @@ class OrderController extends Controller
             'product_id' => 'required|exists:products,id',
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'required|string|lowercase|email|max:255',
+            'customer_phone' => 'nullable|string|max:30',
             'amount' => 'nullable|numeric|min:0',
         ]);
 
@@ -82,6 +83,7 @@ class OrderController extends Controller
             'product_slug' => $product->slug,
             'customer_name' => $data['customer_name'],
             'customer_email' => $data['customer_email'],
+            'customer_phone' => $data['customer_phone'] ?? null,
             'amount' => filled($data['amount'] ?? null) ? $data['amount'] : $product->effectivePrice(),
             'currency' => Setting::current()->currency,
             'status' => 'pending',

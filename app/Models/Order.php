@@ -20,6 +20,7 @@ class Order extends Model
         'product_slug',
         'customer_name',
         'customer_email',
+        'customer_phone',
         'amount',
         'currency',
         'status',

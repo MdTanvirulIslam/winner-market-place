@@ -27,7 +27,9 @@ class CheckoutTest extends TestCase
         ]);
         $customer = User::factory()->create(['role' => 'customer']);
 
-        $response = $this->actingAs($customer)->post('/checkout/' . $product->slug);
+        $response = $this->actingAs($customer)->post('/checkout/' . $product->slug, [
+            'customer_phone' => '01712345678',
+        ]);
 
         $order = Order::first();
         $this->assertNotNull($order);
@@ -37,6 +39,7 @@ class CheckoutTest extends TestCase
         $this->assertSame($product->slug, $order->product_slug);
         $this->assertSame($product->name, $order->product_name);
         $this->assertSame($customer->email, $order->customer_email);
+        $this->assertSame('01712345678', $order->customer_phone);
         $this->assertSame('8000.00', (string) $order->amount); // sale price wins
         $this->assertMatchesRegularExpression('/^WM-\d{4}-\d{6}$/', $order->order_no);
     }
@@ -46,8 +49,8 @@ class CheckoutTest extends TestCase
         $product = Product::factory()->published()->create();
         $customer = User::factory()->create(['role' => 'customer']);
 
-        $this->actingAs($customer)->post('/checkout/' . $product->slug);
-        $this->actingAs($customer)->post('/checkout/' . $product->slug);
+        $this->actingAs($customer)->post('/checkout/' . $product->slug, ['customer_phone' => '01712345678']);
+        $this->actingAs($customer)->post('/checkout/' . $product->slug, ['customer_phone' => '01712345678']);
 
         $this->assertSame(1, Order::count());
     }
@@ -58,7 +61,7 @@ class CheckoutTest extends TestCase
         $customer = User::factory()->create(['role' => 'customer']);
 
         $this->actingAs($customer)->get('/checkout/' . $draft->slug)->assertNotFound();
-        $this->actingAs($customer)->post('/checkout/' . $draft->slug)->assertNotFound();
+        $this->actingAs($customer)->post('/checkout/' . $draft->slug, ['customer_phone' => '01712345678'])->assertNotFound();
     }
 
     public function test_customers_only_see_their_own_orders(): void

@@ -28,7 +28,16 @@
 
             @if($order->isPending())
                 <div class="rounded-lg border p-6" style="border-color:var(--border);background:var(--bg-card);">
-                    <h5 class="mb-3 text-sm font-bold text-text">How to Pay</h5>
+                    <h5 class="mb-3 text-sm font-bold text-text">Pay Online</h5>
+                    <form method="POST" action="{{ route('payment.start', $order) }}">
+                        @csrf
+                        <button type="submit" class="w-full rounded-lg bg-accent px-4 py-3 text-sm font-bold text-white transition-colors duration-300 hover:bg-accent-hover">
+                            Pay {{ format_price($order->amount) }} Now — bKash / Nagad / Card
+                        </button>
+                    </form>
+                    <p class="mt-2 text-[12px] leading-5 text-muted">You'll be taken to SSLCommerz's secure payment page. Your license is issued automatically the moment the payment is confirmed.</p>
+
+                    <h5 class="mb-3 mt-6 border-t pt-5 text-sm font-bold text-text" style="border-color:var(--border);">Or Pay Manually</h5>
                     @if($setting->payment_instructions)
                         <p class="whitespace-pre-line text-[13px] leading-6 text-text">{{ $setting->payment_instructions }}</p>
                     @else
