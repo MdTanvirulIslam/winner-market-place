@@ -1,0 +1,45 @@
+name: Deploy to cPanel
+on:
+  push:
+    branches: [ main ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Zip files
+        run: zip -r deploy.zip . -x "*.git*" -x ".github/*"
+
+      - name: Upload via cPanel API
+        run: |
+          RESULT=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/execute/Fileman/upload_files?dir=/home7/dcwebsite/marketplace.differentcoder.website" \
+            -F "file=@deploy.zip")
+          echo "Upload response: $RESULT"
+
+      - name: Extract via cPanel API2
+        run: |
+          RESULT=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
+            -d "cpanel_jsonapi_apiversion=2" \
+            -d "cpanel_jsonapi_module=Fileman" \
+            -d "cpanel_jsonapi_func=fileop" \
+            -d "op=extract" \
+            -d "sourcefiles=/home7/dcwebsite/marketplace.differentcoder.website/deploy.zip" \
+            -d "destfiles=/home7/dcwebsite/marketplace.differentcoder.website" \
+            -d "doubledecode=1" \
+            -d "overwrite=1")
+          echo "Extract response: $RESULT"
+
+      - name: Cleanup zip via cPanel API2
+        run: |
+          RESULT=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
+            -d "cpanel_jsonapi_apiversion=2" \
+            -d "cpanel_jsonapi_module=Fileman" \
+            -d "cpanel_jsonapi_func=fileop" \
+            -d "op=unlink" \
+            -d "sourcefiles=/home7/dcwebsite/marketplace.differentcoder.website/deploy.zip" \
+            -d "doubledecode=1")
+          echo "Cleanup response: $RESULT"
