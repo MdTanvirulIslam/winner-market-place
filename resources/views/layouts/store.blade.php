@@ -29,7 +29,7 @@
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Admin Panel</a>
                     @else
-                        <a href="{{ route('profile.edit') }}" class="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">My Account</a>
+                        <a href="{{ route('account.orders') }}" class="rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">My Account</a>
                     @endif
                 @else
                     <a href="{{ route('login') }}" class="px-3 py-2 text-sm font-semibold text-text">Login</a>

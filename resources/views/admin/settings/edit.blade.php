@@ -32,6 +32,12 @@
                             </select>
                             <x-input-error :messages="$errors->get('currency')" class="mt-2" />
                         </div>
+                        <div>
+                            <label class="panel-label" for="payment_instructions">Manual Payment Instructions</label>
+                            <textarea class="panel-textarea mt-1" id="payment_instructions" name="payment_instructions" rows="5" placeholder="e.g. bKash (personal): 01XXXXXXXXX&#10;WhatsApp us the transaction ID with your order number.">{{ old('payment_instructions', $setting->payment_instructions) }}</textarea>
+                            <p class="mt-1 text-[12px] text-muted">Shown to customers on pending orders until online payments launch in Phase 3.</p>
+                            <x-input-error :messages="$errors->get('payment_instructions')" class="mt-2" />
+                        </div>
                         <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Save Settings</button>
                     </form>
                 </div>

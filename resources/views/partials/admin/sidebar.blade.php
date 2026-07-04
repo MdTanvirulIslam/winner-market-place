@@ -17,12 +17,16 @@
         </a>
 
         <div class="sidebar-label">Sales</div>
-        <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 2">
-            <span class="icon nav-icon" data-icon="shopping-cart"></span><span class="link-text">Orders</span><span class="sidebar-meta">P2</span>
-        </span>
-        <span class="sidebar-link opacity-50 cursor-default" title="Coming in Phase 2">
-            <span class="icon nav-icon" data-icon="users"></span><span class="link-text">Customers</span><span class="sidebar-meta">P2</span>
-        </span>
+        <a class="sidebar-link{{ request()->routeIs('admin.orders.*') ? ' active' : '' }}" href="{{ route('admin.orders.index') }}" @if(request()->routeIs('admin.orders.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="shopping-cart"></span><span class="link-text">Orders</span>
+            @php($failedProvisioningCount = \App\Models\Order::where('provisioning_status', 'failed')->count())
+            @if($failedProvisioningCount > 0)
+                <span class="sidebar-meta" style="background:rgba(239,68,68,0.25);color:#fca5a5;">{{ $failedProvisioningCount }}</span>
+            @endif
+        </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.customers.*') ? ' active' : '' }}" href="{{ route('admin.customers.index') }}" @if(request()->routeIs('admin.customers.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="users"></span><span class="link-text">Customers</span>
+        </a>
 
         @if(auth()->user()->isSuperAdmin())
             <div class="sidebar-label">Admin</div>

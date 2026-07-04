@@ -10,6 +10,7 @@ class Setting extends Model
         'store_name',
         'support_email',
         'currency',
+        'payment_instructions',
     ];
 
     private static ?self $cached = null;

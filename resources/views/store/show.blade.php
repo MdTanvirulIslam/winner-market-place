@@ -93,10 +93,9 @@
                         </div>
                         <p class="mb-4 text-[12px] leading-5 text-muted">One-time payment · license key by email · lifetime re-downloads of every version.</p>
 
-                        <button type="button" disabled class="mb-2 w-full cursor-not-allowed rounded-lg bg-accent/50 px-4 py-3 text-sm font-semibold text-white">
-                            <span class="icon mr-1" data-icon="shopping-cart"></span> Buy Now
-                        </button>
-                        <p class="mb-3 text-center text-[12px] font-semibold text-warning">Online checkout is launching soon — contact us to order today.</p>
+                        <a href="{{ route('store.checkout', $product->slug) }}" class="mb-3 flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">
+                            <span class="icon" data-icon="shopping-cart"></span> Buy Now
+                        </a>
 
                         @if($product->demo_url)
                             <a href="{{ $product->demo_url }}" target="_blank" rel="noopener" class="block w-full rounded-lg border px-4 py-3 text-center text-sm font-semibold text-text transition-colors duration-300 hover:border-accent hover:text-accent" style="border-color:var(--border);">

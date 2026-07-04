@@ -34,6 +34,7 @@ class SettingController extends Controller
             'store_name' => 'required|string|max:255',
             'support_email' => 'nullable|email|max:255',
             'currency' => 'required|string|max:10',
+            'payment_instructions' => 'nullable|string|max:3000',
         ]);
 
         $data['support_email'] = $data['support_email'] ?? '';
