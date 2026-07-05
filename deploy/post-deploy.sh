@@ -18,6 +18,14 @@ if [ -d public/storage ] && [ ! -L public/storage ]; then
 fi
 "$PHP_BIN" artisan storage:link --force
 
+# Files that once lived in a real public/storage directory (moved aside
+# above on an earlier deploy) belong on the public disk — merge them back
+# without overwriting anything newer.
+for replaced in public/storage-replaced-*; do
+    [ -d "$replaced" ] || continue
+    cp -Rn "$replaced"/. storage/app/public/ 2>/dev/null || true
+done
+
 # The web server serves the linked files directly, so they must be
 # world-readable (PHP writes them as the account user).
 chmod o+x storage storage/app

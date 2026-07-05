@@ -13,7 +13,10 @@ jobs:
 
       - name: Upload via cPanel API
         run: |
-          RESULT=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+          # The zip is large (committed vendor/ + build) — retry transient
+          # upload failures instead of failing the whole deploy.
+          RESULT=$(curl -s --retry 3 --retry-all-errors --max-time 900 \
+            -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
             "https://${{ secrets.FTP_HOST }}:2083/execute/Fileman/upload_files?dir=/home7/dcwebsite/marketplace.differentcoder.website" \
             -F "file=@deploy.zip")
           echo "Upload response: $RESULT"
