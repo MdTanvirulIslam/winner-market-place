@@ -5,6 +5,7 @@ use App\Http\Controllers\Store\AccountController;
 use App\Http\Controllers\Store\CheckoutController;
 use App\Http\Controllers\Store\CouponController;
 use App\Http\Controllers\Store\DownloadController;
+use App\Http\Controllers\Store\MediaController;
 use App\Http\Controllers\Store\PageController;
 use App\Http\Controllers\Store\ReviewController;
 use App\Http\Controllers\Store\PaymentController;
@@ -23,6 +24,9 @@ Route::get('/refund-policy', [PageController::class, 'refundPolicy'])->name('sto
 Route::get('/contact', [PageController::class, 'contact'])->name('store.contact');
 Route::post('/contact', [PageController::class, 'sendContact'])->middleware('throttle:5,10')->name('store.contact.send');
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+
+// Product screenshots, streamed by PHP (see MediaController for why).
+Route::get('/media/{path}', MediaController::class)->where('path', '.*')->name('media');
 
 // SSLCommerz callbacks — cross-site POSTs, CSRF-exempt (see bootstrap/app.php),
 // no auth (the browser POST arrives without session cookies). Validation is

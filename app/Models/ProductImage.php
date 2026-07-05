@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -21,6 +20,8 @@ class ProductImage extends Model
 
     public function url(): string
     {
-        return Storage::disk('public')->url($this->path);
+        // Served by MediaController — not via the public/storage symlink,
+        // which shared-hosting deploys repeatedly broke.
+        return url('/media/' . $this->path);
     }
 }
