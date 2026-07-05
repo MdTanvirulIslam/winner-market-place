@@ -56,6 +56,8 @@ class ReleaseController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->rejectFailedUpload($request);
+
         $data = $request->validate([
             'product_id' => 'required|exists:products,id',
             'version' => [
@@ -98,6 +100,8 @@ class ReleaseController extends Controller
 
     public function update(Request $request, Release $release): RedirectResponse
     {
+        $this->rejectFailedUpload($request);
+
         $data = $request->validate([
             'notes' => 'nullable|string|max:5000',
             'file' => 'nullable|file|mimes:zip|max:204800',
@@ -119,6 +123,19 @@ class ReleaseController extends Controller
         $release->save();
 
         return redirect()->route('admin.releases.index')->with('success', "Release {$release->version} updated.");
+    }
+
+    /**
+     * Surface the real PHP upload error (usually the host's ini size limits)
+     * instead of a vague validation message.
+     */
+    private function rejectFailedUpload(Request $request): void
+    {
+        if ($request->hasFile('file') && ! $request->file('file')->isValid()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'file' => 'Upload failed: ' . $request->file('file')->getErrorMessage(),
+            ]);
+        }
     }
 
     /**

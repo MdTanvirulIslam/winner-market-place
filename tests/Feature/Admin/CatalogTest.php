@@ -136,6 +136,35 @@ class CatalogTest extends TestCase
         ])->assertSessionHasErrors('file');
     }
 
+    public function test_failed_php_upload_reports_the_real_reason(): void
+    {
+        Storage::fake('public');
+        $staff = $this->staff();
+        $product = Product::factory()->create();
+
+        // Simulate PHP dropping the file for exceeding upload_max_filesize.
+        $broken = new UploadedFile(
+            UploadedFile::fake()->image('shot.png')->getPathname(),
+            'shot.png',
+            'image/png',
+            UPLOAD_ERR_INI_SIZE,
+            true
+        );
+
+        $response = $this->actingAs($staff)->patch(route('admin.products.update', $product), [
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'short_description' => $product->short_description,
+            'price' => $product->price,
+            'status' => $product->status,
+            'images' => [$broken],
+        ]);
+
+        $response->assertSessionHasErrors('images.0');
+        $this->assertStringContainsString('upload_max_filesize', session('errors')->first('images.0'));
+        $this->assertSame(0, $product->images()->count());
+    }
+
     public function test_deleting_a_screenshot_removes_the_file(): void
     {
         Storage::fake('public');

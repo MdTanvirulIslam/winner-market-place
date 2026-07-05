@@ -24,3 +24,9 @@ chmod o+x storage storage/app
 chmod -R o+rX storage/app/public
 
 "$PHP_BIN" artisan config:clear
+
+# Diagnostics for the deploy log (readable in cPanel: storage/logs/deploy-*).
+# Note: these are the CLI values — the web values come from public/.user.ini,
+# which the host applies to the web SAPI only.
+"$PHP_BIN" -r 'echo "cli upload_max_filesize=", ini_get("upload_max_filesize"), " post_max_size=", ini_get("post_max_size"), PHP_EOL;'
+ls -ld storage/app/public public/storage public/.user.ini

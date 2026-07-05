@@ -120,6 +120,17 @@ class ProductController extends Controller
 
     private function storeImages(Request $request, Product $product): void
     {
+        // PHP drops uploads beyond its own ini limits before Laravel's rules
+        // run, which surfaces as a vague "must be an image" — report the
+        // real reason instead.
+        foreach ($request->file('images', []) as $index => $file) {
+            if (! $file->isValid()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    "images.{$index}" => 'Upload failed: ' . $file->getErrorMessage(),
+                ]);
+            }
+        }
+
         $request->validate([
             'images' => 'nullable|array|max:10',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:4096',

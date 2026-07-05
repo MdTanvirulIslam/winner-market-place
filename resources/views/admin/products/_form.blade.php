@@ -1,3 +1,9 @@
+@if($errors->any())
+    <div class="rounded-lg border px-4 py-3 text-[13px] font-semibold" style="border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.06);color:#dc2626;">
+        Some changes could not be saved — check the highlighted fields below.
+    </div>
+@endif
+
 <div class="grid gap-4 md:grid-cols-2">
     <div>
         <label class="panel-label" for="name">Name</label>
@@ -82,5 +88,7 @@
     <input class="panel-input mt-1" type="file" id="images" name="images[]" accept=".jpg,.jpeg,.png,.webp" multiple>
     <p class="mt-1 text-[12px] text-muted">JPG, PNG, or WebP — up to 10 images, 4 MB each.</p>
     <x-input-error :messages="$errors->get('images')" class="mt-2" />
-    <x-input-error :messages="$errors->get('images.0')" class="mt-2" />
+    @foreach($errors->get('images.*') as $messages)
+        <x-input-error :messages="$messages" class="mt-2" />
+    @endforeach
 </div>

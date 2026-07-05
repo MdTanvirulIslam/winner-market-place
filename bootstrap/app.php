@@ -25,5 +25,12 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // A POST beyond post_max_size never reaches validation — turn the
+        // bare 413 into a message on the form the admin actually sees.
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, \Illuminate\Http\Request $request) {
+            return back()->with(
+                'error',
+                'The upload is larger than the server accepts in one request. Use smaller files or raise post_max_size.'
+            );
+        });
     })->create();
