@@ -44,14 +44,15 @@ jobs:
             -d "doubledecode=1")
           echo "Cleanup response: $RESULT"
 
-      # The cPanel file API cannot execute commands, so migrations run via a
-      # temporary every-minute cron job that is removed after it has fired.
-      # migrate --force is idempotent — an extra firing is harmless.
-      - name: Run database migrations via temporary cron
+      # The cPanel file API cannot execute commands, so post-deploy tasks
+      # (migrations, storage:link, permissions — see deploy/post-deploy.sh)
+      # run via a temporary every-minute cron job that is removed after it
+      # has fired. The script is idempotent — an extra firing is harmless.
+      - name: Run post-deploy tasks via temporary cron
         run: |
           APPDIR=/home7/dcwebsite/marketplace.differentcoder.website
           MARKER="deploy-migrate-${{ github.sha }}"
-          CMD="cd $APPDIR && (php artisan migrate --force || /usr/local/bin/php artisan migrate --force) >> storage/logs/$MARKER.log 2>&1"
+          CMD="cd $APPDIR && sh deploy/post-deploy.sh >> storage/logs/$MARKER.log 2>&1"
 
           ADD=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
             "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
