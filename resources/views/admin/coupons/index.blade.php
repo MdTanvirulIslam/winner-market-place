@@ -46,8 +46,12 @@
                             </td>
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
-                                    <a href="{{ route('admin.coupons.edit', $coupon) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <button type="button" data-modal-open="delete-coupon-{{ $coupon->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                    <a href="{{ route('admin.coupons.edit', $coupon) }}" class="action-btn" title="Edit" aria-label="Edit {{ $coupon->code }}">
+                                        <span class="icon" data-icon="square-pen"></span>
+                                    </a>
+                                    <button type="button" data-modal-open="delete-coupon-{{ $coupon->id }}" class="action-btn danger" title="Delete" aria-label="Delete {{ $coupon->code }}">
+                                        <span class="icon" data-icon="trash-2"></span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

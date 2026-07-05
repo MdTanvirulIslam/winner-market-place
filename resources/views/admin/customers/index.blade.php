@@ -33,7 +33,9 @@
                             <td>{{ $customer->orders_count }}</td>
                             <td>{{ $customer->created_at->format('d M Y') }}</td>
                             <td class="text-right">
-                                <a href="{{ route('admin.orders.index', ['q' => $customer->email]) }}" class="text-[13px] font-semibold text-accent">View Orders</a>
+                                <a href="{{ route('admin.orders.index', ['q' => $customer->email]) }}" class="action-btn" title="View orders" aria-label="View orders by {{ $customer->name }}">
+                                    <span class="icon" data-icon="eye"></span>
+                                </a>
                             </td>
                         </tr>
                     @empty

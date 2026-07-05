@@ -48,16 +48,22 @@
                                     @if($review->status !== 'approved')
                                         <form method="POST" action="{{ route('admin.reviews.approve', $review) }}">
                                             @csrf
-                                            <button type="submit" class="text-[13px] font-semibold" style="color:#16a34a;">Approve</button>
+                                            <button type="submit" class="action-btn success" title="Approve" aria-label="Approve review by {{ $review->user?->name ?? 'customer' }}">
+                                                <span class="icon" data-icon="check"></span>
+                                            </button>
                                         </form>
                                     @endif
                                     @if($review->status !== 'rejected')
                                         <form method="POST" action="{{ route('admin.reviews.reject', $review) }}">
                                             @csrf
-                                            <button type="submit" class="text-[13px] font-semibold text-muted">Reject</button>
+                                            <button type="submit" class="action-btn" title="Reject" aria-label="Reject review by {{ $review->user?->name ?? 'customer' }}">
+                                                <span class="icon" data-icon="x"></span>
+                                            </button>
                                         </form>
                                     @endif
-                                    <button type="button" data-modal-open="delete-review-{{ $review->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                    <button type="button" data-modal-open="delete-review-{{ $review->id }}" class="action-btn danger" title="Delete" aria-label="Delete review by {{ $review->user?->name ?? 'customer' }}">
+                                        <span class="icon" data-icon="trash-2"></span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

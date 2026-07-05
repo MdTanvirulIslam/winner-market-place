@@ -30,8 +30,12 @@
                             <td>{{ $category->products_count }}</td>
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
-                                    <a href="{{ route('admin.categories.edit', $category) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <button type="button" data-modal-open="delete-category-{{ $category->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                    <a href="{{ route('admin.categories.edit', $category) }}" class="action-btn" title="Edit" aria-label="Edit {{ $category->name }}">
+                                        <span class="icon" data-icon="square-pen"></span>
+                                    </a>
+                                    <button type="button" data-modal-open="delete-category-{{ $category->id }}" class="action-btn danger" title="Delete" aria-label="Delete {{ $category->name }}">
+                                        <span class="icon" data-icon="trash-2"></span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

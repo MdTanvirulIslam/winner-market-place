@@ -1740,6 +1740,29 @@
     @apply pointer-events-none opacity-40;
   }
 
+  /* Row action icon buttons (edit / delete / view) in the datatables. */
+  .action-btn {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border text-[13px] transition-all duration-300 ease-smooth;
+    border-color: var(--border);
+    background: var(--bg-card);
+    color: var(--text-muted);
+  }
+
+  .action-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .action-btn.danger:hover {
+    border-color: #dc2626;
+    color: #dc2626;
+  }
+
+  .action-btn.success:hover {
+    border-color: #16a34a;
+    color: #16a34a;
+  }
+
   /* Sortable column headers — the link inherits the th typography. */
   .sort-link {
     @apply inline-flex items-center gap-1 text-inherit transition-colors duration-300;

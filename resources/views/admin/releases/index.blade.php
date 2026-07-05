@@ -41,8 +41,12 @@
                             <td>{{ $release->released_at?->format('d M Y') }}</td>
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
-                                    <a href="{{ route('admin.releases.edit', $release) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <button type="button" data-modal-open="delete-release-{{ $release->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                    <a href="{{ route('admin.releases.edit', $release) }}" class="action-btn" title="Edit" aria-label="Edit v{{ $release->version }} of {{ $release->product->name }}">
+                                        <span class="icon" data-icon="square-pen"></span>
+                                    </a>
+                                    <button type="button" data-modal-open="delete-release-{{ $release->id }}" class="action-btn danger" title="Delete" aria-label="Delete v{{ $release->version }} of {{ $release->product->name }}">
+                                        <span class="icon" data-icon="trash-2"></span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

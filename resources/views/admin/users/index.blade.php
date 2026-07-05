@@ -34,9 +34,13 @@
                             <td>{{ $user->created_at->format('d M Y') }}</td>
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
-                                    <a href="{{ route('admin.users.edit', $user) }}" class="text-[13px] font-semibold text-accent">Edit</a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="action-btn" title="Edit" aria-label="Edit {{ $user->name }}">
+                                        <span class="icon" data-icon="square-pen"></span>
+                                    </a>
                                     @unless($user->is(auth()->user()))
-                                        <button type="button" data-modal-open="delete-user-{{ $user->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                        <button type="button" data-modal-open="delete-user-{{ $user->id }}" class="action-btn danger" title="Delete" aria-label="Delete {{ $user->name }}">
+                                            <span class="icon" data-icon="trash-2"></span>
+                                        </button>
                                     @endunless
                                 </div>
                             </td>

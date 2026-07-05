@@ -67,10 +67,16 @@
                             <td class="text-right">
                                 <div class="inline-flex items-center gap-2">
                                     @if($product->isPublished())
-                                        <a href="{{ route('store.products.show', $product->slug) }}" target="_blank" class="text-[13px] font-semibold text-muted">View</a>
+                                        <a href="{{ route('store.products.show', $product->slug) }}" target="_blank" class="action-btn" title="View in store" aria-label="View {{ $product->name }} in store">
+                                            <span class="icon" data-icon="eye"></span>
+                                        </a>
                                     @endif
-                                    <a href="{{ route('admin.products.edit', $product) }}" class="text-[13px] font-semibold text-accent">Edit</a>
-                                    <button type="button" data-modal-open="delete-product-{{ $product->id }}" class="text-[13px] font-semibold text-danger">Delete</button>
+                                    <a href="{{ route('admin.products.edit', $product) }}" class="action-btn" title="Edit" aria-label="Edit {{ $product->name }}">
+                                        <span class="icon" data-icon="square-pen"></span>
+                                    </a>
+                                    <button type="button" data-modal-open="delete-product-{{ $product->id }}" class="action-btn danger" title="Delete" aria-label="Delete {{ $product->name }}">
+                                        <span class="icon" data-icon="trash-2"></span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
