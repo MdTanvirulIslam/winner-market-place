@@ -107,7 +107,15 @@ class ProductController extends Controller
             // Must match the License Manager product slug — the join key
             // used for license provisioning in Phase 2.
             'slug' => 'required|string|max:255|regex:/^[a-z0-9]+(-[a-z0-9]+)*$/|unique:products,slug' . ($product ? ',' . $product->id : ''),
-            'short_description' => 'required|string|max:500',
+            'short_description' => [
+                'required', 'string', 'max:2000',
+                // The editor stores HTML — budget the visible text, not markup.
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (mb_strlen(trim(strip_tags((string) $value))) > 500) {
+                        $fail('The short description may not be longer than 500 characters of text.');
+                    }
+                },
+            ],
             'description' => 'nullable|string',
             'features' => 'nullable|string',
             'requirements' => 'nullable|string',

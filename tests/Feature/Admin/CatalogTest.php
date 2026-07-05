@@ -136,6 +136,27 @@ class CatalogTest extends TestCase
         ])->assertSessionHasErrors('file');
     }
 
+    public function test_short_description_length_counts_text_not_markup(): void
+    {
+        $staff = $this->staff();
+        $base = [
+            'name' => 'Rich Product',
+            'slug' => 'rich-product',
+            'price' => 100,
+            'status' => 'draft',
+        ];
+
+        // 600 characters of visible text is too long even inside HTML.
+        $this->actingAs($staff)->post('/admin/products', $base + [
+            'short_description' => '<p>' . str_repeat('a', 600) . '</p>',
+        ])->assertSessionHasErrors('short_description');
+
+        // 300 characters wrapped in markup is fine.
+        $this->actingAs($staff)->post('/admin/products', $base + [
+            'short_description' => '<p><strong>' . str_repeat('b', 300) . '</strong></p>',
+        ])->assertSessionDoesntHaveErrors('short_description');
+    }
+
     public function test_failed_php_upload_reports_the_real_reason(): void
     {
         Storage::fake('public');

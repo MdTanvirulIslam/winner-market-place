@@ -1,4 +1,5 @@
 <x-admin-layout title="New Product">
+    @vite('resources/js/editor.js')
     <div class="page-header animate-in opacity-0">
         <div>
             <x-breadcrumb :items="['Products' => route('admin.products.index'), 'New' => null]" />

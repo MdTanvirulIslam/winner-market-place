@@ -59,26 +59,26 @@
 
 <div>
     <label class="panel-label" for="short_description">Short Description</label>
-    <textarea class="panel-textarea mt-1" id="short_description" name="short_description" rows="2" maxlength="500" required>{{ old('short_description', $product?->short_description) }}</textarea>
+    <textarea class="panel-textarea mt-1" id="short_description" name="short_description" rows="2" data-quill="minimal">{{ old('short_description', $product?->short_description) }}</textarea>
     <p class="mt-1 text-[12px] text-muted">Shown on product cards and listings (max 500 characters).</p>
     <x-input-error :messages="$errors->get('short_description')" class="mt-2" />
 </div>
 
 <div>
     <label class="panel-label" for="description">Full Description</label>
-    <textarea class="panel-textarea mt-1" id="description" name="description" rows="8">{{ old('description', $product?->description) }}</textarea>
+    <textarea class="panel-textarea mt-1" id="description" name="description" rows="8" data-quill="full">{{ old('description', $product?->description) }}</textarea>
     <x-input-error :messages="$errors->get('description')" class="mt-2" />
 </div>
 
 <div class="grid gap-4 md:grid-cols-2">
     <div>
-        <label class="panel-label" for="features">Features (one per line)</label>
-        <textarea class="panel-textarea mt-1" id="features" name="features" rows="6" placeholder="Responsive design&#10;Admin dashboard&#10;Multi-language">{{ old('features', $product?->features) }}</textarea>
+        <label class="panel-label" for="features">Features (one per line or bullet list)</label>
+        <textarea class="panel-textarea mt-1" id="features" name="features" rows="6" data-quill="list" placeholder="Responsive design&#10;Admin dashboard&#10;Multi-language">{{ old('features', $product?->features) }}</textarea>
         <x-input-error :messages="$errors->get('features')" class="mt-2" />
     </div>
     <div>
-        <label class="panel-label" for="requirements">Requirements (one per line)</label>
-        <textarea class="panel-textarea mt-1" id="requirements" name="requirements" rows="6" placeholder="PHP 8.2+&#10;MySQL 5.7+">{{ old('requirements', $product?->requirements) }}</textarea>
+        <label class="panel-label" for="requirements">Requirements (one per line or bullet list)</label>
+        <textarea class="panel-textarea mt-1" id="requirements" name="requirements" rows="6" data-quill="list" placeholder="PHP 8.2+&#10;MySQL 5.7+">{{ old('requirements', $product?->requirements) }}</textarea>
         <x-input-error :messages="$errors->get('requirements')" class="mt-2" />
     </div>
 </div>

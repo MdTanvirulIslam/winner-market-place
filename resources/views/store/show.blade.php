@@ -1,4 +1,4 @@
-<x-store-layout :title="$product->name" :meta-description="$product->short_description" :og-image="$product->images->first()?->url()">
+<x-store-layout :title="$product->name" :meta-description="$product->shortDescriptionText()" :og-image="$product->images->first()?->url()">
     <div class="mx-auto max-w-6xl px-4 py-10">
         {{-- Breadcrumb --}}
         <nav class="mb-6 flex items-center gap-2 text-[13px] text-muted">
@@ -47,7 +47,7 @@
                         <span>({{ $reviews->count() }} {{ Str::plural('review', $reviews->count()) }})</span>
                     </div>
                 @endif
-                <p class="mb-6 text-[15px] leading-7 text-muted">{{ $product->short_description }}</p>
+                <p class="mb-6 text-[15px] leading-7 text-muted">{{ $product->shortDescriptionText() }}</p>
 
                 {{-- Tabs --}}
                 <div x-data="{ tab: 'description' }">
@@ -58,7 +58,13 @@
                         <button type="button" @click="tab = 'reviews'" :class="tab === 'reviews' ? 'border-[var(--accent)] text-accent' : 'border-transparent text-muted'" class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300">Reviews ({{ $reviews->count() }})</button>
                     </div>
 
-                    <div x-show="tab === 'description'" class="whitespace-pre-line text-[14px] leading-7 text-text">{{ $product->description ?: 'No description yet.' }}</div>
+                    <div x-show="tab === 'description'" class="rich-text">
+                        @if($product->description)
+                            {!! $product->descriptionHtml() !!}
+                        @else
+                            No description yet.
+                        @endif
+                    </div>
 
                     <div x-show="tab === 'features'">
                         @if($product->featureList())
@@ -178,10 +184,10 @@
                             <div class="flex justify-between"><dt class="text-muted">Published</dt><dd class="font-semibold text-text">{{ $product->created_at->format('d M Y') }}</dd></div>
                         </dl>
 
-                        @if($product->requirements)
+                        @if($product->requirementList())
                             <h5 class="mb-2 mt-5 text-sm font-bold text-text">Requirements</h5>
                             <ul class="space-y-1.5">
-                                @foreach(array_filter(array_map('trim', explode("\n", $product->requirements))) as $requirement)
+                                @foreach($product->requirementList() as $requirement)
                                     <li class="flex items-start gap-2 text-[13px] text-muted"><span class="icon mt-0.5 text-accent" data-icon="check"></span>{{ $requirement }}</li>
                                 @endforeach
                             </ul>

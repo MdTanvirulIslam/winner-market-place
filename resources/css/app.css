@@ -1740,6 +1740,89 @@
     @apply pointer-events-none opacity-40;
   }
 
+  /* Quill editors on the product form — follow the admin theme tokens. */
+  .quill-wrap .ql-toolbar.ql-snow {
+    @apply rounded-t-lg;
+    border-color: var(--border);
+    background: var(--bg-input);
+  }
+
+  .quill-wrap .ql-container.ql-snow {
+    @apply rounded-b-lg text-[14px];
+    border-color: var(--border);
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+  }
+
+  .quill-wrap .ql-editor {
+    min-height: 120px;
+  }
+
+  .quill-wrap .ql-editor.ql-blank::before {
+    color: var(--text-muted);
+    font-style: normal;
+  }
+
+  .quill-wrap .ql-snow .ql-stroke {
+    stroke: var(--text-muted);
+  }
+
+  .quill-wrap .ql-snow .ql-fill {
+    fill: var(--text-muted);
+  }
+
+  .quill-wrap .ql-snow .ql-picker {
+    color: var(--text-muted);
+  }
+
+  /* Rich product descriptions rendered on the store product page. */
+  .rich-text {
+    @apply text-[14px] leading-7 text-text;
+  }
+
+  .rich-text p {
+    @apply mb-3;
+  }
+
+  .rich-text h2,
+  .rich-text h3,
+  .rich-text h4 {
+    @apply mb-2 mt-5 font-heading font-extrabold text-text;
+  }
+
+  .rich-text h2 { @apply text-xl; }
+  .rich-text h3 { @apply text-lg; }
+  .rich-text h4 { @apply text-base; }
+
+  .rich-text ul,
+  .rich-text ol {
+    @apply mb-3 ml-5 space-y-1;
+  }
+
+  .rich-text ul { list-style: disc; }
+  .rich-text ol { list-style: decimal; }
+
+  .rich-text a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  .rich-text blockquote {
+    @apply my-3 border-l-4 pl-4 text-muted;
+    border-color: var(--border);
+  }
+
+  .rich-text pre,
+  .rich-text code {
+    @apply rounded px-1.5 py-0.5 font-mono text-[13px];
+    background: var(--bg-input);
+  }
+
+  .rich-text pre {
+    @apply mb-3 overflow-x-auto p-3;
+  }
+
   /* Row action icon buttons (edit / delete / view) in the datatables. */
   .action-btn {
     @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border text-[13px] transition-all duration-300 ease-smooth;

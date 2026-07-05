@@ -20,7 +20,7 @@
                 <span>({{ $product->approved_reviews_count }})</span>
             </div>
         @endif
-        <p class="mb-3 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->short_description }}</p>
+        <p class="mb-3 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->shortDescriptionText() }}</p>
         <div class="flex items-center justify-between">
             <div class="text-[15px] font-extrabold text-text">
                 @if($product->isOnSale())
