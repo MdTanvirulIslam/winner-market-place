@@ -17,12 +17,39 @@
                         <div class="text-[12px] text-muted">Single-site license · lifetime updates</div>
                     </div>
                 </div>
+                @php($couponDiscount = $coupon?->discountFor($product->effectivePrice()) ?? 0.0)
+                @php($payable = round($product->effectivePrice() - $couponDiscount, 2))
                 <div class="space-y-2 border-t pt-4 text-[13px]" style="border-color:var(--border);">
                     @if($product->isOnSale())
                         <div class="flex justify-between text-muted"><span>Regular price</span><span class="line-through">{{ format_price($product->price) }}</span></div>
                         <div class="flex justify-between text-muted"><span>Discount</span><span>−{{ format_price((float) $product->price - $product->effectivePrice()) }}</span></div>
                     @endif
-                    <div class="flex justify-between text-[15px] font-extrabold text-text"><span>Total</span><span>{{ format_price($product->effectivePrice()) }}</span></div>
+                    @if($coupon)
+                        <div class="flex justify-between text-muted">
+                            <span>Coupon <code class="font-bold text-accent">{{ $coupon->code }}</code></span>
+                            <span>−{{ format_price($couponDiscount) }}</span>
+                        </div>
+                    @endif
+                    <div class="flex justify-between text-[15px] font-extrabold text-text"><span>Total</span><span>{{ format_price($payable) }}</span></div>
+                </div>
+
+                {{-- Coupon --}}
+                <div class="mt-4 border-t pt-4" style="border-color:var(--border);">
+                    @if($coupon)
+                        <form method="POST" action="{{ route('store.checkout.coupon.remove', $product->slug) }}" class="flex items-center justify-between">
+                            @csrf
+                            @method('DELETE')
+                            <span class="text-[13px] text-muted">Coupon <strong class="text-accent">{{ $coupon->code }}</strong> applied</span>
+                            <button type="submit" class="text-[13px] font-semibold text-danger">Remove</button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('store.checkout.coupon', $product->slug) }}" class="flex gap-2">
+                            @csrf
+                            <input class="panel-input flex-1" type="text" name="code" value="{{ old('code') }}" placeholder="Coupon code" aria-label="Coupon code">
+                            <button type="submit" class="rounded-lg border px-4 py-2 text-[13px] font-semibold text-text transition-colors duration-300 hover:border-accent hover:text-accent" style="border-color:var(--border);">Apply</button>
+                        </form>
+                        <x-input-error :messages="$errors->get('code')" class="mt-2" />
+                    @endif
                 </div>
             </div>
 
@@ -47,7 +74,7 @@
                         <x-input-error :messages="$errors->get('customer_phone')" class="mt-2" />
                     </div>
                     <button type="submit" class="w-full rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">
-                        Place Order — {{ format_price($product->effectivePrice()) }}
+                        Place Order — {{ format_price($payable) }}
                     </button>
                 </form>
                 <a href="{{ route('store.products.show', $product->slug) }}" class="mt-3 block text-center text-[13px] font-semibold text-muted">Back to product</a>

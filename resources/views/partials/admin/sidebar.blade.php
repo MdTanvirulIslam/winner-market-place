@@ -27,6 +27,19 @@
         <a class="sidebar-link{{ request()->routeIs('admin.customers.*') ? ' active' : '' }}" href="{{ route('admin.customers.index') }}" @if(request()->routeIs('admin.customers.*')) aria-current="page" @endif>
             <span class="icon nav-icon" data-icon="users"></span><span class="link-text">Customers</span>
         </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.coupons.*') ? ' active' : '' }}" href="{{ route('admin.coupons.index') }}" @if(request()->routeIs('admin.coupons.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="ticket"></span><span class="link-text">Coupons</span>
+        </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.reviews.*') ? ' active' : '' }}" href="{{ route('admin.reviews.index') }}" @if(request()->routeIs('admin.reviews.*')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="star"></span><span class="link-text">Reviews</span>
+            @php($pendingReviewCount = \App\Models\Review::where('status', 'pending')->count())
+            @if($pendingReviewCount > 0)
+                <span class="sidebar-meta" style="background:rgba(245,158,11,0.25);color:#fcd34d;">{{ $pendingReviewCount }}</span>
+            @endif
+        </a>
+        <a class="sidebar-link{{ request()->routeIs('admin.analytics') ? ' active' : '' }}" href="{{ route('admin.analytics') }}" @if(request()->routeIs('admin.analytics')) aria-current="page" @endif>
+            <span class="icon nav-icon" data-icon="chart-line"></span><span class="link-text">Analytics</span>
+        </a>
 
         @if(auth()->user()->isSuperAdmin())
             <div class="sidebar-label">Admin</div>

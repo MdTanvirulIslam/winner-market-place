@@ -40,6 +40,13 @@
 
                 {{-- Title (mobile shows above card) --}}
                 <h1 class="mb-2 font-heading text-3xl font-extrabold text-text">{{ $product->name }}</h1>
+                @if($reviews->isNotEmpty())
+                    <div class="mb-2 flex items-center gap-2 text-[13px] text-muted">
+                        @include('partials.store.stars', ['rating' => $averageRating])
+                        <span class="font-semibold text-text">{{ $averageRating }}</span>
+                        <span>({{ $reviews->count() }} {{ Str::plural('review', $reviews->count()) }})</span>
+                    </div>
+                @endif
                 <p class="mb-6 text-[15px] leading-7 text-muted">{{ $product->short_description }}</p>
 
                 {{-- Tabs --}}
@@ -48,6 +55,7 @@
                         <button type="button" @click="tab = 'description'" :class="tab === 'description' ? 'border-[var(--accent)] text-accent' : 'border-transparent text-muted'" class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300">Description</button>
                         <button type="button" @click="tab = 'features'" :class="tab === 'features' ? 'border-[var(--accent)] text-accent' : 'border-transparent text-muted'" class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300">Features</button>
                         <button type="button" @click="tab = 'changelog'" :class="tab === 'changelog' ? 'border-[var(--accent)] text-accent' : 'border-transparent text-muted'" class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300">Changelog</button>
+                        <button type="button" @click="tab = 'reviews'" :class="tab === 'reviews' ? 'border-[var(--accent)] text-accent' : 'border-transparent text-muted'" class="border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-300">Reviews ({{ $reviews->count() }})</button>
                     </div>
 
                     <div x-show="tab === 'description'" class="whitespace-pre-line text-[14px] leading-7 text-text">{{ $product->description ?: 'No description yet.' }}</div>
@@ -75,6 +83,59 @@
                             </div>
                         @empty
                             <p class="text-[14px] text-muted">No releases published yet.</p>
+                        @endforelse
+                    </div>
+
+                    <div x-show="tab === 'reviews'">
+                        {{-- Write a review --}}
+                        @if($ownReview)
+                            <div class="mb-5 rounded-lg border p-4 text-[13px]" style="border-color:var(--border);background:var(--bg-card);">
+                                @if($ownReview->isPending())
+                                    <span class="font-semibold text-text">Your review is awaiting approval.</span>
+                                @else
+                                    <span class="font-semibold text-text">You reviewed this product.</span>
+                                    @include('partials.store.stars', ['rating' => $ownReview->rating])
+                                @endif
+                            </div>
+                        @elseif($canReview)
+                            <form method="POST" action="{{ route('store.reviews.store', $product->slug) }}" class="mb-6 rounded-lg border p-5" style="border-color:var(--border);background:var(--bg-card);">
+                                @csrf
+                                <h5 class="mb-3 text-sm font-bold text-text">Write a Review</h5>
+                                <div x-data="{ rating: {{ (int) old('rating', 5) }} }" class="mb-3">
+                                    <input type="hidden" name="rating" :value="rating">
+                                    <div class="flex items-center gap-1">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button type="button" @click="rating = {{ $i }}" class="text-2xl leading-none transition-colors duration-150"
+                                                    :style="rating >= {{ $i }} ? 'color:#f59e0b;' : 'color:var(--border);'"
+                                                    aria-label="Rate {{ $i }} {{ Str::plural('star', $i) }}">&#9733;</button>
+                                        @endfor
+                                    </div>
+                                    <x-input-error :messages="$errors->get('rating')" class="mt-2" />
+                                </div>
+                                <textarea class="panel-textarea" name="body" rows="4" placeholder="How is {{ $product->name }} working for you?" required>{{ old('body') }}</textarea>
+                                <x-input-error :messages="$errors->get('body')" class="mt-2" />
+                                <button type="submit" class="mt-3 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Submit Review</button>
+                                <p class="mt-2 text-[12px] text-muted">Reviews are published after moderation.</p>
+                            </form>
+                        @elseif(! auth()->check())
+                            <p class="mb-5 text-[13px] text-muted">Purchased this product? <a href="{{ route('login') }}" class="font-semibold text-accent">Log in</a> to write a review.</p>
+                        @else
+                            <p class="mb-5 text-[13px] text-muted">Only verified buyers can review this product.</p>
+                        @endif
+
+                        {{-- Approved reviews --}}
+                        @forelse($reviews as $review)
+                            <div class="mb-4 rounded-lg border p-4" style="border-color:var(--border);background:var(--bg-card);">
+                                <div class="mb-2 flex flex-wrap items-center gap-2">
+                                    @include('partials.store.stars', ['rating' => $review->rating])
+                                    <span class="text-[13px] font-bold text-text">{{ $review->user->name }}</span>
+                                    <span class="rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-bold text-accent">Verified buyer</span>
+                                    <span class="text-[12px] text-muted">{{ $review->created_at->format('d M Y') }}</span>
+                                </div>
+                                <p class="whitespace-pre-line text-[13px] leading-6 text-text">{{ $review->body }}</p>
+                            </div>
+                        @empty
+                            <p class="text-[14px] text-muted">No reviews yet — be the first!</p>
                         @endforelse
                     </div>
                 </div>

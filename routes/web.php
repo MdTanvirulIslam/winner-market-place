@@ -3,8 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Store\AccountController;
 use App\Http\Controllers\Store\CheckoutController;
+use App\Http\Controllers\Store\CouponController;
 use App\Http\Controllers\Store\DownloadController;
 use App\Http\Controllers\Store\PageController;
+use App\Http\Controllers\Store\ReviewController;
 use App\Http\Controllers\Store\PaymentController;
 use App\Http\Controllers\Store\SitemapController;
 use App\Http\Controllers\Store\StoreController;
@@ -35,6 +37,9 @@ Route::middleware('throttle:60,1')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/{product:slug}', [CheckoutController::class, 'show'])->name('store.checkout');
     Route::post('/checkout/{product:slug}', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('store.checkout.store');
+    Route::post('/checkout/{product:slug}/coupon', [CouponController::class, 'apply'])->middleware('throttle:10,1')->name('store.checkout.coupon');
+    Route::delete('/checkout/{product:slug}/coupon', [CouponController::class, 'remove'])->name('store.checkout.coupon.remove');
+    Route::post('/products/{product:slug}/reviews', [ReviewController::class, 'store'])->middleware('throttle:5,10')->name('store.reviews.store');
     Route::post('/payment/{order}/start', [PaymentController::class, 'start'])->middleware('throttle:10,1')->name('payment.start');
 
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');

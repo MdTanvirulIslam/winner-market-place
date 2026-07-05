@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewReleaseMail;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Release;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Throwable;
 
 // Versioned product zips. Files live on the private local disk
 // (storage/app/private) and are never web-accessible directly; customer
@@ -59,7 +64,7 @@ class ReleaseController extends Controller
             'local'
         );
 
-        $product->releases()->create([
+        $release = $product->releases()->create([
             'version' => $data['version'],
             'notes' => $data['notes'] ?? null,
             'file_path' => $path,
@@ -67,7 +72,12 @@ class ReleaseController extends Controller
             'released_at' => now(),
         ]);
 
-        return redirect()->route('admin.releases.index')->with('success', "Release {$data['version']} uploaded.");
+        $notified = $request->boolean('notify_buyers') ? $this->notifyBuyers($release) : null;
+
+        return redirect()->route('admin.releases.index')->with(
+            'success',
+            "Release {$data['version']} uploaded." . ($notified !== null ? " Notified {$notified} " . Str::plural('buyer', $notified) . '.' : '')
+        );
     }
 
     public function edit(Release $release): View
@@ -98,6 +108,31 @@ class ReleaseController extends Controller
         $release->save();
 
         return redirect()->route('admin.releases.index')->with('success', "Release {$release->version} updated.");
+    }
+
+    /**
+     * Email every buyer with a delivered (not refunded) order for the
+     * release's product. Returns how many buyers were emailed.
+     */
+    private function notifyBuyers(Release $release): int
+    {
+        $emails = Order::where('product_id', $release->product_id)
+            ->where('status', 'delivered')
+            ->distinct()
+            ->pluck('customer_email');
+
+        $sent = 0;
+
+        foreach ($emails as $email) {
+            try {
+                Mail::to($email)->send(new NewReleaseMail($release));
+                $sent++;
+            } catch (Throwable $e) {
+                report($e); // one bad address must not block the rest
+            }
+        }
+
+        return $sent;
     }
 
     public function destroy(Release $release): RedirectResponse

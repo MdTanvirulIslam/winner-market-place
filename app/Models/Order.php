@@ -22,6 +22,8 @@ class Order extends Model
         'customer_email',
         'customer_phone',
         'amount',
+        'coupon_code',
+        'discount_amount',
         'currency',
         'status',
         'payment_method',
@@ -40,6 +42,7 @@ class Order extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
             'paid_at' => 'datetime',
             'delivered_at' => 'datetime',
             'refunded_at' => 'datetime',

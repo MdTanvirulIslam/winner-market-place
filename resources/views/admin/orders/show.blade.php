@@ -30,6 +30,9 @@
                     <dl class="space-y-2.5 text-[13px]">
                         <div class="flex justify-between"><dt class="text-muted">Product</dt><dd class="font-semibold">{{ $order->product_name }} (<code>{{ $order->product_slug }}</code>)</dd></div>
                         <div class="flex justify-between"><dt class="text-muted">Amount</dt><dd class="font-semibold">{{ format_price($order->amount) }} {{ $order->currency }}</dd></div>
+                        @if((float) $order->discount_amount > 0)
+                            <div class="flex justify-between"><dt class="text-muted">Coupon</dt><dd class="font-semibold"><code>{{ $order->coupon_code }}</code> (−{{ format_price($order->discount_amount) }})</dd></div>
+                        @endif
                         <div class="flex justify-between"><dt class="text-muted">Customer</dt><dd class="font-semibold">{{ $order->customer_name }}</dd></div>
                         <div class="flex justify-between"><dt class="text-muted">Email</dt><dd class="font-semibold">{{ $order->customer_email }}</dd></div>
                         @if($order->paid_at)

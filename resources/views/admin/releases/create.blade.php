@@ -41,6 +41,11 @@
                     <x-input-error :messages="$errors->get('notes')" class="mt-2" />
                 </div>
 
+                <label class="flex items-center gap-2 text-sm text-text">
+                    <input type="checkbox" name="notify_buyers" value="1" @checked(old('notify_buyers', true))>
+                    Email buyers about this update
+                </label>
+
                 <div class="flex items-center gap-3">
                     <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Upload Release</button>
                     <a href="{{ route('admin.releases.index') }}" class="text-sm font-semibold text-muted">Cancel</a>

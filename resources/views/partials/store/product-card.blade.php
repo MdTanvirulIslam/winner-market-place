@@ -14,6 +14,12 @@
             <div class="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{{ $product->category->name }}</div>
         @endif
         <h5 class="mb-1 text-[15px] font-bold text-text">{{ $product->name }}</h5>
+        @if(($product->approved_reviews_count ?? 0) > 0)
+            <div class="mb-1 flex items-center gap-1.5 text-[12px] text-muted">
+                @include('partials.store.stars', ['rating' => (float) $product->approved_reviews_avg_rating])
+                <span>({{ $product->approved_reviews_count }})</span>
+            </div>
+        @endif
         <p class="mb-3 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->short_description }}</p>
         <div class="flex items-center justify-between">
             <div class="text-[15px] font-extrabold text-text">

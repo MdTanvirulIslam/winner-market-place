@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Store;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OrderPlacedMail;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Setting;
@@ -15,13 +16,14 @@ use Throwable;
 
 class CheckoutController extends Controller
 {
-    public function show(Product $product): View
+    public function show(Request $request, Product $product): View
     {
         abort_unless($product->isPublished(), 404);
 
         return view('store.checkout', [
             'product' => $product->load('images'),
             'setting' => Setting::current(),
+            'coupon' => $this->sessionCoupon($request),
         ]);
     }
 
@@ -49,6 +51,10 @@ class CheckoutController extends Controller
                 ->with('info', 'You already have an open order for this product.');
         }
 
+        $price = $product->effectivePrice();
+        $coupon = $this->sessionCoupon($request);
+        $discount = $coupon?->discountFor($price) ?? 0.0;
+
         $order = Order::place([
             'user_id' => $user->id,
             'product_id' => $product->id,
@@ -57,11 +63,18 @@ class CheckoutController extends Controller
             'customer_name' => $user->name,
             'customer_email' => $user->email,
             'customer_phone' => $data['customer_phone'],
-            'amount' => $product->effectivePrice(),
+            'amount' => round($price - $discount, 2),
+            'coupon_code' => $coupon?->code,
+            'discount_amount' => $discount,
             'currency' => Setting::current()->currency,
             'status' => 'pending',
             'payment_method' => 'manual',
         ]);
+
+        if ($coupon) {
+            $coupon->increment('used_count');
+            $request->session()->forget(CouponController::SESSION_KEY);
+        }
 
         try {
             Mail::to($order->customer_email)->send(new OrderPlacedMail($order));
@@ -71,5 +84,22 @@ class CheckoutController extends Controller
 
         return redirect()->route('account.orders.show', $order)
             ->with('success', 'Order placed! Follow the payment instructions to complete your purchase.');
+    }
+
+    /**
+     * The coupon currently applied in this session, if it is still
+     * redeemable — silently dropped otherwise.
+     */
+    private function sessionCoupon(Request $request): ?Coupon
+    {
+        $coupon = Coupon::findByCode($request->session()->get(CouponController::SESSION_KEY));
+
+        if ($coupon && $coupon->isRedeemable()) {
+            return $coupon;
+        }
+
+        $request->session()->forget(CouponController::SESSION_KEY);
+
+        return null;
     }
 }

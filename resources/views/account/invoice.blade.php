@@ -86,8 +86,14 @@
                         <strong>{{ $order->product_name }}</strong><br>
                         <span class="muted">Software license · digital delivery · lifetime updates</span>
                     </td>
-                    <td class="right">{{ $order->currency }} {{ number_format((float) $order->amount, 2) }}</td>
+                    <td class="right">{{ $order->currency }} {{ number_format((float) $order->amount + (float) $order->discount_amount, 2) }}</td>
                 </tr>
+                @if((float) $order->discount_amount > 0)
+                    <tr>
+                        <td class="right">Coupon {{ $order->coupon_code }}</td>
+                        <td class="right">−{{ $order->currency }} {{ number_format((float) $order->discount_amount, 2) }}</td>
+                    </tr>
+                @endif
                 <tr class="total-row">
                     <td class="right">Total</td>
                     <td class="right">{{ $order->currency }} {{ number_format((float) $order->amount, 2) }}</td>

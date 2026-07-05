@@ -49,6 +49,16 @@ class Product extends Model
         return $this->hasMany(Release::class)->orderByDesc('released_at')->orderByDesc('id');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved');
+    }
+
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', 'published');

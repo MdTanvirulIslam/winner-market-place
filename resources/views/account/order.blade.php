@@ -21,6 +21,10 @@
                 <h5 class="mb-4 text-sm font-bold text-text">Order Details</h5>
                 <dl class="space-y-2.5 text-[13px]">
                     <div class="flex justify-between"><dt class="text-muted">Product</dt><dd class="font-semibold text-text">{{ $order->product_name }}</dd></div>
+                    @if((float) $order->discount_amount > 0)
+                        <div class="flex justify-between"><dt class="text-muted">Subtotal</dt><dd class="font-semibold text-text">{{ format_price((float) $order->amount + (float) $order->discount_amount) }}</dd></div>
+                        <div class="flex justify-between"><dt class="text-muted">Coupon {{ $order->coupon_code }}</dt><dd class="font-semibold text-text">−{{ format_price($order->discount_amount) }}</dd></div>
+                    @endif
                     <div class="flex justify-between"><dt class="text-muted">Amount</dt><dd class="font-semibold text-text">{{ format_price($order->amount) }}</dd></div>
                     @if($order->paid_at)
                         <div class="flex justify-between"><dt class="text-muted">Paid</dt><dd class="font-semibold text-text">{{ $order->paid_at->format('d M Y, H:i') }}</dd></div>
