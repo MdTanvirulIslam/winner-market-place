@@ -20,7 +20,7 @@
                 <div x-data="{ active: 0 }" class="mb-8">
                     <div class="mb-3 aspect-[16/9] overflow-hidden rounded-lg border" style="border-color:var(--border);background:var(--bg-input);">
                         @forelse($product->images as $index => $image)
-                            <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" class="h-full w-full object-cover">
+                            <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" class="h-full w-full object-contain">
                         @empty
                             <div class="flex h-full w-full items-center justify-center text-5xl text-muted"><span class="icon" data-icon="boxes"></span></div>
                         @endforelse
