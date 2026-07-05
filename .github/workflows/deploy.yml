@@ -43,3 +43,47 @@ jobs:
             -d "sourcefiles=/home7/dcwebsite/marketplace.differentcoder.website/deploy.zip" \
             -d "doubledecode=1")
           echo "Cleanup response: $RESULT"
+
+      # The cPanel file API cannot execute commands, so migrations run via a
+      # temporary every-minute cron job that is removed after it has fired.
+      # migrate --force is idempotent — an extra firing is harmless.
+      - name: Run database migrations via temporary cron
+        run: |
+          APPDIR=/home7/dcwebsite/marketplace.differentcoder.website
+          MARKER="deploy-migrate-${{ github.sha }}"
+          CMD="cd $APPDIR && (php artisan migrate --force || /usr/local/bin/php artisan migrate --force) >> storage/logs/$MARKER.log 2>&1"
+
+          ADD=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
+            -d "cpanel_jsonapi_apiversion=2" \
+            -d "cpanel_jsonapi_module=Cron" \
+            -d "cpanel_jsonapi_func=add_line" \
+            -d "minute=*" -d "hour=*" -d "day=*" -d "month=*" -d "weekday=*" \
+            --data-urlencode "command=$CMD")
+          echo "Add cron response: $ADD"
+
+          # Give the cron at least one full minute boundary to fire.
+          sleep 90
+
+          LIST=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
+            -d "cpanel_jsonapi_apiversion=2" \
+            -d "cpanel_jsonapi_module=Cron" \
+            -d "cpanel_jsonapi_func=listcron")
+          LINEKEY=$(echo "$LIST" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for entry in data['cpanelresult']['data']:
+              if '$MARKER' in (entry.get('command') or ''):
+                  print(entry['linekey'])
+                  break
+          ")
+          echo "Removing cron linekey: $LINEKEY"
+
+          REMOVE=$(curl -s -u "${{ secrets.FTP_USERNAME }}:${{ secrets.FTP_PASSWORD }}" \
+            "https://${{ secrets.FTP_HOST }}:2083/json-api/cpanel" \
+            -d "cpanel_jsonapi_apiversion=2" \
+            -d "cpanel_jsonapi_module=Cron" \
+            -d "cpanel_jsonapi_func=remove_line" \
+            -d "linekey=$LINEKEY")
+          echo "Remove cron response: $REMOVE"
