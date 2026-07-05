@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use Illuminate\Http\RedirectResponse;
@@ -10,9 +11,19 @@ use Illuminate\View\View;
 
 class CouponController extends Controller
 {
-    public function index(): View
+    use WithDataTable;
+
+    public function index(Request $request): View
     {
-        $coupons = Coupon::orderByDesc('created_at')->paginate(20);
+        $query = Coupon::query()
+            ->when($request->filled('q'), fn ($query) => $query->where('code', 'like', '%' . $request->q . '%'));
+
+        $coupons = $this->dataTable(
+            $request,
+            $query,
+            ['code', 'value', 'used_count', 'expires_at', 'created_at'],
+            fn ($query) => $query->orderByDesc('created_at')
+        );
 
         return view('admin.coupons.index', compact('coupons'));
     }

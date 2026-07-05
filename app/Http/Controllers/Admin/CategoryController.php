@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
@@ -10,9 +11,22 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    use WithDataTable;
+
+    public function index(Request $request): View
     {
-        $categories = Category::withCount('products')->orderBy('name')->paginate(20);
+        $query = Category::withCount('products')
+            ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->q . '%')
+                    ->orWhere('slug', 'like', '%' . $request->q . '%');
+            }));
+
+        $categories = $this->dataTable(
+            $request,
+            $query,
+            ['name', 'products_count', 'created_at'],
+            fn ($query) => $query->orderBy('name')
+        );
 
         return view('admin.categories.index', compact('categories'));
     }

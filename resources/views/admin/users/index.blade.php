@@ -47,9 +47,8 @@
                 </tbody>
             </table>
         </div></div>
+        {{ $users->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $users->links() }}</div>
 
     @foreach($users as $user)
         @unless($user->is(auth()->user()))

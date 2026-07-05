@@ -10,30 +10,27 @@
         </a>
     </div>
 
-    <div class="content-card animate-in opacity-0 mb-4">
-        <div class="content-card-body">
-            <form method="GET" action="{{ route('admin.products.index') }}" class="flex flex-wrap items-end gap-3">
-                <div class="min-w-[220px] flex-1">
-                    <label class="panel-label" for="q">Search</label>
-                    <input class="panel-input mt-1" type="text" id="q" name="q" value="{{ request('q') }}" placeholder="Name or slug...">
-                </div>
-                <div>
-                    <label class="panel-label" for="status">Status</label>
-                    <select class="panel-select mt-1" id="status" name="status">
-                        <option value="">All</option>
-                        <option value="published" @selected(request('status') === 'published')>Published</option>
-                        <option value="draft" @selected(request('status') === 'draft')>Draft</option>
-                    </select>
-                </div>
-                <button type="submit" class="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Filter</button>
-            </form>
-        </div>
-    </div>
-
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.products.index')" search-placeholder="Search by name or slug…">
+                <select class="panel-select w-auto py-2.5 text-[13px]" name="status" data-autosubmit aria-label="Status">
+                    <option value="">All statuses</option>
+                    <option value="published" @selected(request('status') === 'published')>Published</option>
+                    <option value="draft" @selected(request('status') === 'draft')>Draft</option>
+                </select>
+            </x-datatable-toolbar>
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Product</th><th>Slug</th><th>Category</th><th>Price</th><th>Releases</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <x-sort-th field="name" label="Product" />
+                    <th>Slug</th>
+                    <th>Category</th>
+                    <x-sort-th field="price" label="Price" />
+                    <x-sort-th field="releases_count" label="Releases" />
+                    <x-sort-th field="status" label="Status" />
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($products as $product)
                         <tr>
@@ -78,14 +75,13 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted">No products yet — create the first one.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted">No products {{ request()->hasAny(['q', 'status']) ? 'match your filters' : 'yet — create the first one' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $products->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $products->links() }}</div>
 
     @foreach($products as $product)
         <x-confirm-modal

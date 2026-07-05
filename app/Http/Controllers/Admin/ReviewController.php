@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\RedirectResponse;
@@ -10,13 +11,24 @@ use Illuminate\View\View;
 
 class ReviewController extends Controller
 {
+    use WithDataTable;
+
     public function index(Request $request): View
     {
-        $reviews = Review::with(['product', 'user'])
+        $query = Review::with(['product', 'user'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
+                $query->where('body', 'like', '%' . $request->q . '%')
+                    ->orWhereRelation('product', 'name', 'like', '%' . $request->q . '%')
+                    ->orWhereRelation('user', 'name', 'like', '%' . $request->q . '%');
+            }));
+
+        $reviews = $this->dataTable(
+            $request,
+            $query,
+            ['rating', 'status', 'created_at'],
+            fn ($query) => $query->latest()
+        );
 
         return view('admin.reviews.index', [
             'reviews' => $reviews,

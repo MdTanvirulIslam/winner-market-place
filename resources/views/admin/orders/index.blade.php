@@ -20,31 +20,31 @@
         </div>
     @endif
 
-    <div class="content-card animate-in opacity-0 mb-4">
-        <div class="content-card-body">
-            <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-wrap items-end gap-3">
-                <div class="min-w-[220px] flex-1">
-                    <label class="panel-label" for="q">Search</label>
-                    <input class="panel-input mt-1" type="text" id="q" name="q" value="{{ request('q') }}" placeholder="Order no, customer name or email...">
-                </div>
-                <div>
-                    <label class="panel-label" for="status">Status</label>
-                    <select class="panel-select mt-1" id="status" name="status">
-                        <option value="">All</option>
-                        @foreach(['pending', 'paid', 'delivered', 'failed', 'cancelled', 'refunded'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Filter</button>
-            </form>
-        </div>
-    </div>
-
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.orders.index')" search-placeholder="Search by order no, customer name or email…">
+                @if(request()->boolean('provisioning_failed'))
+                    <input type="hidden" name="provisioning_failed" value="1">
+                @endif
+                <select class="panel-select w-auto py-2.5 text-[13px]" name="status" data-autosubmit aria-label="Status">
+                    <option value="">All statuses</option>
+                    @foreach(['pending', 'paid', 'delivered', 'failed', 'cancelled', 'refunded'] as $status)
+                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                    @endforeach
+                </select>
+            </x-datatable-toolbar>
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Amount</th><th>Status</th><th>License</th><th>Date</th></tr></thead>
+                <thead><tr>
+                    <x-sort-th field="order_no" label="Order" />
+                    <x-sort-th field="customer_name" label="Customer" />
+                    <th>Product</th>
+                    <x-sort-th field="amount" label="Amount" />
+                    <x-sort-th field="status" label="Status" />
+                    <th>License</th>
+                    <x-sort-th field="created_at" label="Date" />
+                </tr></thead>
                 <tbody>
                     @forelse($orders as $order)
                         <tr>
@@ -68,12 +68,11 @@
                             <td>{{ $order->created_at->format('d M Y') }}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted">No orders yet.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted">No orders {{ request()->hasAny(['q', 'status', 'provisioning_failed']) ? 'match your filters' : 'yet' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $orders->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $orders->links() }}</div>
 </x-admin-layout>

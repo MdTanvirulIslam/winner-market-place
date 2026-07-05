@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderPlacedMail;
 use App\Models\Order;
@@ -19,23 +20,29 @@ use Throwable;
 
 class OrderController extends Controller
 {
+    use WithDataTable;
+
     public function __construct(private OrderFlow $orderFlow)
     {
     }
 
     public function index(Request $request): View
     {
-        $orders = Order::with('product')
+        $query = Order::with('product')
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
             ->when($request->boolean('provisioning_failed'), fn ($query) => $query->where('provisioning_status', 'failed'))
             ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('order_no', 'like', '%' . $request->q . '%')
                     ->orWhere('customer_name', 'like', '%' . $request->q . '%')
                     ->orWhere('customer_email', 'like', '%' . $request->q . '%');
-            }))
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            }));
+
+        $orders = $this->dataTable(
+            $request,
+            $query,
+            ['order_no', 'customer_name', 'amount', 'status', 'created_at'],
+            fn ($query) => $query->latest()
+        );
 
         return view('admin.orders.index', [
             'orders' => $orders,

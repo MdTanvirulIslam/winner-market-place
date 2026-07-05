@@ -11,9 +11,19 @@
     </div>
 
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.coupons.index')" search-placeholder="Search by code…" />
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Code</th><th>Discount</th><th>Usage</th><th>Expires</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <x-sort-th field="code" label="Code" />
+                    <x-sort-th field="value" label="Discount" />
+                    <x-sort-th field="used_count" label="Usage" />
+                    <x-sort-th field="expires_at" label="Expires" />
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($coupons as $coupon)
                         <tr>
@@ -42,14 +52,13 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center text-muted">No coupons yet — create the first one.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted">No coupons {{ request('q') ? 'match your search' : 'yet — create the first one' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $coupons->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $coupons->links() }}</div>
 
     @foreach($coupons as $coupon)
         <x-confirm-modal

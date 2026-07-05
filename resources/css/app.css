@@ -1653,6 +1653,12 @@
     color: #dc2626;
   }
 
+  /* Page header: breadcrumb + title on the left, primary action button on
+     the right, on every admin page. */
+  .page-header {
+    @apply mb-5 flex flex-wrap items-center justify-between gap-4;
+  }
+
   .datatable-toolbar {
     @apply mb-5 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between;
   }
@@ -1728,6 +1734,20 @@
     border-color: var(--accent);
     background: var(--accent);
     color: #fff;
+  }
+
+  .pagination-chip.disabled {
+    @apply pointer-events-none opacity-40;
+  }
+
+  /* Sortable column headers — the link inherits the th typography. */
+  .sort-link {
+    @apply inline-flex items-center gap-1 text-inherit transition-colors duration-300;
+  }
+
+  .sort-link:hover,
+  .sort-link.active {
+    color: var(--accent);
   }
 
   .flash-stack {

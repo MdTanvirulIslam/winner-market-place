@@ -152,6 +152,15 @@ const initApp = () => {
             AppUI.closeAllDropdowns();
         }
     });
+
+    // Datatable filters: selects marked data-autosubmit apply immediately.
+    document.addEventListener('change', (event) => {
+        const target = event.target;
+
+        if (target instanceof Element && target.closest('[data-autosubmit]')) {
+            target.closest('form')?.submit();
+        }
+    });
 };
 
 if (document.readyState === 'loading') {

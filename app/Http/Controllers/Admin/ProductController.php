@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
@@ -13,18 +14,24 @@ use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    use WithDataTable;
+
     public function index(Request $request): View
     {
-        $products = Product::with(['category', 'images'])
+        $query = Product::with(['category', 'images'])
             ->withCount('releases')
             ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
                 $query->where('name', 'like', '%' . $request->q . '%')
                     ->orWhere('slug', 'like', '%' . $request->q . '%');
             }))
-            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
-            ->orderByDesc('created_at')
-            ->paginate(20)
-            ->withQueryString();
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status));
+
+        $products = $this->dataTable(
+            $request,
+            $query,
+            ['name', 'price', 'status', 'releases_count', 'created_at'],
+            fn ($query) => $query->orderByDesc('created_at')
+        );
 
         return view('admin.products.index', compact('products'));
     }

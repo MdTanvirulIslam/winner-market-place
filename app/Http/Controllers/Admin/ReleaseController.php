@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\WithDataTable;
 use App\Http\Controllers\Controller;
 use App\Mail\NewReleaseMail;
 use App\Models\Order;
@@ -21,13 +22,23 @@ use Throwable;
 // downloads go through authorized signed routes in Phase 2.
 class ReleaseController extends Controller
 {
+    use WithDataTable;
+
     public function index(Request $request): View
     {
-        $releases = Release::with('product')
+        $query = Release::with('product')
             ->when($request->filled('product'), fn ($query) => $query->whereRelation('product', 'slug', $request->product))
-            ->orderByDesc('released_at')
-            ->paginate(20)
-            ->withQueryString();
+            ->when($request->filled('q'), fn ($query) => $query->where(function ($query) use ($request) {
+                $query->where('version', 'like', '%' . $request->q . '%')
+                    ->orWhereRelation('product', 'name', 'like', '%' . $request->q . '%');
+            }));
+
+        $releases = $this->dataTable(
+            $request,
+            $query,
+            ['version', 'file_size', 'download_count', 'released_at'],
+            fn ($query) => $query->orderByDesc('released_at')
+        );
 
         return view('admin.releases.index', [
             'releases' => $releases,

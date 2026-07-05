@@ -11,9 +11,17 @@
     </div>
 
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.categories.index')" search-placeholder="Search by name or slug…" />
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Name</th><th>Slug</th><th>Products</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <x-sort-th field="name" label="Name" />
+                    <th>Slug</th>
+                    <x-sort-th field="products_count" label="Products" />
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($categories as $category)
                         <tr>
@@ -28,14 +36,13 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="text-center text-muted">No categories yet — create the first one.</td></tr>
+                        <tr><td colspan="4" class="text-center text-muted">No categories {{ request('q') ? 'match your search' : 'yet — create the first one' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $categories->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $categories->links() }}</div>
 
     @foreach($categories as $category)
         <x-confirm-modal

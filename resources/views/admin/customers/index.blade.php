@@ -7,22 +7,19 @@
         </div>
     </div>
 
-    <div class="content-card animate-in opacity-0 mb-4">
-        <div class="content-card-body">
-            <form method="GET" action="{{ route('admin.customers.index') }}" class="flex flex-wrap items-end gap-3">
-                <div class="min-w-[220px] flex-1">
-                    <label class="panel-label" for="q">Search</label>
-                    <input class="panel-input mt-1" type="text" id="q" name="q" value="{{ request('q') }}" placeholder="Name or email...">
-                </div>
-                <button type="submit" class="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Search</button>
-            </form>
-        </div>
-    </div>
-
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.customers.index')" search-placeholder="Search by name or email…" />
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Name</th><th>Email</th><th>Orders</th><th>Joined</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <x-sort-th field="name" label="Name" />
+                    <x-sort-th field="email" label="Email" />
+                    <x-sort-th field="orders_count" label="Orders" />
+                    <x-sort-th field="created_at" label="Joined" />
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($customers as $customer)
                         <tr>
@@ -40,12 +37,11 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center text-muted">No customers yet.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted">No customers {{ request('q') ? 'match your search' : 'yet' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $customers->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $customers->links() }}</div>
 </x-admin-layout>

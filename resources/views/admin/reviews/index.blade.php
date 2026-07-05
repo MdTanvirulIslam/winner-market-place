@@ -8,20 +8,30 @@
                 @if($pendingCount > 0) <strong class="text-text">{{ $pendingCount }} awaiting moderation.</strong> @endif
             </p>
         </div>
-        <form method="GET" class="flex items-center gap-2">
-            <select class="panel-select" name="status" onchange="this.form.submit()">
-                <option value="">All statuses</option>
-                @foreach(['pending', 'approved', 'rejected'] as $status)
-                    <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
-                @endforeach
-            </select>
-        </form>
     </div>
 
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.reviews.index')" search-placeholder="Search by product, customer or text…">
+                <select class="panel-select w-auto py-2.5 text-[13px]" name="status" data-autosubmit aria-label="Status">
+                    <option value="">All statuses</option>
+                    @foreach(['pending', 'approved', 'rejected'] as $status)
+                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                    @endforeach
+                </select>
+            </x-datatable-toolbar>
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Status</th><th>Date</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <th>Product</th>
+                    <th>Customer</th>
+                    <x-sort-th field="rating" label="Rating" />
+                    <th>Review</th>
+                    <x-sort-th field="status" label="Status" />
+                    <x-sort-th field="created_at" label="Date" />
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($reviews as $review)
                         <tr>
@@ -38,7 +48,7 @@
                                     @if($review->status !== 'approved')
                                         <form method="POST" action="{{ route('admin.reviews.approve', $review) }}">
                                             @csrf
-                                            <button type="submit" class="text-[13px] font-semibold text-success" style="color:#16a34a;">Approve</button>
+                                            <button type="submit" class="text-[13px] font-semibold" style="color:#16a34a;">Approve</button>
                                         </form>
                                     @endif
                                     @if($review->status !== 'rejected')
@@ -52,14 +62,13 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="text-center text-muted">No reviews {{ request('status') ? 'with this status' : 'yet' }}.</td></tr>
+                        <tr><td colspan="7" class="text-center text-muted">No reviews {{ request()->hasAny(['q', 'status']) ? 'match your filters' : 'yet' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $reviews->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $reviews->links() }}</div>
 
     @foreach($reviews as $review)
         <x-confirm-modal

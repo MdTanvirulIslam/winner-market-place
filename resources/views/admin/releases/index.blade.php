@@ -10,27 +10,27 @@
         </a>
     </div>
 
-    <div class="content-card animate-in opacity-0 mb-4">
-        <div class="content-card-body">
-            <form method="GET" action="{{ route('admin.releases.index') }}" class="flex flex-wrap items-end gap-3">
-                <div>
-                    <label class="panel-label" for="product">Product</label>
-                    <select class="panel-select mt-1" id="product" name="product">
-                        <option value="">All products</option>
-                        @foreach($products as $product)
-                            <option value="{{ $product->slug }}" @selected(request('product') === $product->slug)>{{ $product->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="rounded-lg bg-accent px-4 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Filter</button>
-            </form>
-        </div>
-    </div>
-
     <div class="content-card animate-in opacity-0">
+        <div class="content-card-body">
+            <x-datatable-toolbar :action="route('admin.releases.index')" search-placeholder="Search by product or version…">
+                <select class="panel-select w-auto py-2.5 text-[13px]" name="product" data-autosubmit aria-label="Product">
+                    <option value="">All products</option>
+                    @foreach($products as $product)
+                        <option value="{{ $product->slug }}" @selected(request('product') === $product->slug)>{{ $product->name }}</option>
+                    @endforeach
+                </select>
+            </x-datatable-toolbar>
+        </div>
         <div class="content-card-body p-0"><div class="overflow-x-auto">
             <table class="data-table">
-                <thead><tr><th>Product</th><th>Version</th><th>Size</th><th>Downloads</th><th>Released</th><th class="text-right">Actions</th></tr></thead>
+                <thead><tr>
+                    <th>Product</th>
+                    <x-sort-th field="version" label="Version" />
+                    <x-sort-th field="file_size" label="Size" />
+                    <x-sort-th field="download_count" label="Downloads" />
+                    <x-sort-th field="released_at" label="Released" />
+                    <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
                     @forelse($releases as $release)
                         <tr>
@@ -47,14 +47,13 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="text-center text-muted">No releases yet — upload the first zip.</td></tr>
+                        <tr><td colspan="6" class="text-center text-muted">No releases {{ request()->hasAny(['q', 'product']) ? 'match your filters' : 'yet — upload the first zip' }}.</td></tr>
                     @endforelse
                 </tbody>
             </table>
         </div></div>
+        {{ $releases->links('vendor.pagination.admin') }}
     </div>
-
-    <div class="mt-4">{{ $releases->links() }}</div>
 
     @foreach($releases as $release)
         <x-confirm-modal
