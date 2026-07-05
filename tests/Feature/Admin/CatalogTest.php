@@ -111,6 +111,31 @@ class CatalogTest extends TestCase
         Storage::disk('local')->assertExists($release->file_path);
     }
 
+    public function test_ajax_release_upload_returns_json_redirect(): void
+    {
+        Storage::fake('local');
+        $product = Product::factory()->create(['slug' => 'ajax-product']);
+
+        // Success: JSON body carries the redirect target for the uploader.
+        $this->actingAs($this->staff())->postJson('/admin/releases', [
+            'product_id' => $product->id,
+            'version' => '1.0.0',
+            'notes' => '<p>First release.</p>',
+            'file' => UploadedFile::fake()->create('app.zip', 100, 'application/zip'),
+        ])->assertOk()
+            ->assertJson(['redirect' => route('admin.releases.index')]);
+
+        $this->assertNotNull(Release::where('product_id', $product->id)->first());
+
+        // Validation failure: 422 JSON the uploader can display inline.
+        $this->actingAs($this->staff())->postJson('/admin/releases', [
+            'product_id' => $product->id,
+            'version' => 'not a version!!',
+            'file' => UploadedFile::fake()->create('app.zip', 100, 'application/zip'),
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors('version');
+    }
+
     public function test_duplicate_versions_per_product_are_rejected(): void
     {
         Storage::fake('local');

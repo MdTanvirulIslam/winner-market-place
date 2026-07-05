@@ -22,7 +22,7 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:8px;margin-bottom:20px;">
                                 <tr><td style="padding:16px 20px;">
                                     <p style="margin:0 0 6px;color:#64748b;font-size:12px;">WHAT'S NEW</p>
-                                    <p style="margin:0;color:#1e293b;font-size:14px;line-height:22px;white-space:pre-line;">{{ $release->notes }}</p>
+                                    <div style="color:#1e293b;font-size:14px;line-height:22px;">{!! $release->notesHtml() !!}</div>
                                 </td></tr>
                             </table>
                         @endif

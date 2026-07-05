@@ -51,8 +51,84 @@ const mountEditor = (textarea) => {
     textarea.closest('form')?.addEventListener('submit', sync);
 };
 
+// AJAX upload with a live progress bar for forms marked data-ajax-upload
+// (release zips run to 200 MB — a silent POST is unusable). XMLHttpRequest
+// because fetch exposes no upload progress.
+const mountAjaxUpload = (form) => {
+    const progressWrap = form.querySelector('[data-upload-progress]');
+    const progressFill = progressWrap?.querySelector('.progress-fill');
+    const percentLabel = progressWrap?.querySelector('[data-upload-percent]');
+    const errorBox = form.querySelector('[data-upload-errors]');
+    const submitButton = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        errorBox?.classList.add('hidden');
+        if (errorBox) errorBox.textContent = '';
+        progressWrap?.classList.remove('hidden');
+        if (submitButton) submitButton.disabled = true;
+
+        const xhr = new XMLHttpRequest();
+        xhr.open(form.method || 'POST', form.action);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+        const setPercent = (value) => {
+            if (progressFill) progressFill.style.width = `${value}%`;
+            if (percentLabel) percentLabel.textContent = `${value}%`;
+        };
+
+        xhr.upload.addEventListener('progress', (progress) => {
+            if (progress.lengthComputable) {
+                const percent = Math.round((progress.loaded / progress.total) * 100);
+                setPercent(percent);
+                if (percent >= 100 && percentLabel) {
+                    percentLabel.textContent = '100% — processing…';
+                }
+            }
+        });
+
+        const fail = (messages) => {
+            progressWrap?.classList.add('hidden');
+            setPercent(0);
+            if (submitButton) submitButton.disabled = false;
+            if (errorBox) {
+                errorBox.textContent = messages.join(' ');
+                errorBox.classList.remove('hidden');
+            }
+        };
+
+        xhr.addEventListener('load', () => {
+            let body = {};
+            try {
+                body = JSON.parse(xhr.responseText || '{}');
+            } catch {
+                // fall through to the generic error below
+            }
+
+            if (xhr.status >= 200 && xhr.status < 300 && body.redirect) {
+                window.location.assign(body.redirect);
+                return;
+            }
+
+            if (xhr.status === 422 && body.errors) {
+                fail(Object.values(body.errors).flat());
+                return;
+            }
+
+            fail([body.message || `Upload failed (HTTP ${xhr.status}). Please try again.`]);
+        });
+
+        xhr.addEventListener('error', () => fail(['Network error — the upload did not complete. Please try again.']));
+
+        xhr.send(new FormData(form));
+    });
+};
+
 const init = () => {
     document.querySelectorAll('textarea[data-quill]').forEach(mountEditor);
+    document.querySelectorAll('form[data-ajax-upload]').forEach(mountAjaxUpload);
 };
 
 if (document.readyState === 'loading') {

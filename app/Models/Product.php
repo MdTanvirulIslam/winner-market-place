@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\RichText;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -83,12 +84,6 @@ class Product extends Model
     }
 
     /**
-     * Tags allowed through in rich product descriptions. Only staff author
-     * this content — the allowlist is defense-in-depth, not a sandbox.
-     */
-    private const RICH_TEXT_TAGS = '<p><br><strong><em><u><s><a><ul><ol><li><h2><h3><h4><blockquote><pre><code><span>';
-
-    /**
      * The feature list, one entry per non-empty line — accepts both legacy
      * plain text and Quill HTML (paragraphs or bullet lists).
      *
@@ -96,7 +91,7 @@ class Product extends Model
      */
     public function featureList(): array
     {
-        return self::htmlToLines($this->features);
+        return RichText::lines($this->features);
     }
 
     /**
@@ -104,7 +99,7 @@ class Product extends Model
      */
     public function requirementList(): array
     {
-        return self::htmlToLines($this->requirements);
+        return RichText::lines($this->requirements);
     }
 
     /**
@@ -113,13 +108,7 @@ class Product extends Model
      */
     public function descriptionHtml(): string
     {
-        $value = $this->description ?? '';
-
-        if ($value === strip_tags($value)) {
-            return nl2br(e($value));
-        }
-
-        return strip_tags($value, self::RICH_TEXT_TAGS);
+        return RichText::html($this->description);
     }
 
     /**
@@ -127,20 +116,7 @@ class Product extends Model
      */
     public function shortDescriptionText(): string
     {
-        return trim(html_entity_decode(strip_tags($this->short_description ?? ''), ENT_QUOTES));
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function htmlToLines(?string $value): array
-    {
-        $text = preg_replace('/<\/(p|li|div)>|<br\s*\/?>/i', "\n", $value ?? '');
-
-        return array_values(array_filter(array_map(
-            fn (string $line) => trim(html_entity_decode(strip_tags($line), ENT_QUOTES)),
-            explode("\n", $text)
-        ), fn (string $line) => $line !== ''));
+        return RichText::text($this->short_description);
     }
 
     public function latestRelease(): ?Release

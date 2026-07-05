@@ -8,6 +8,7 @@ use App\Mail\NewReleaseMail;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Release;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -54,7 +55,7 @@ class ReleaseController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $this->rejectFailedUpload($request);
 
@@ -64,7 +65,7 @@ class ReleaseController extends Controller
                 'required', 'string', 'max:50', 'regex:/^[0-9]+(\.[0-9]+)*([.-][a-zA-Z0-9]+)*$/',
                 Rule::unique('releases')->where('product_id', $request->integer('product_id')),
             ],
-            'notes' => 'nullable|string|max:5000',
+            'notes' => 'nullable|string|max:20000',
             'file' => 'required|file|mimes:zip|max:204800',
         ]);
 
@@ -87,10 +88,10 @@ class ReleaseController extends Controller
 
         $notified = $request->boolean('notify_buyers') ? $this->notifyBuyers($release) : null;
 
-        return redirect()->route('admin.releases.index')->with(
-            'success',
-            "Release {$data['version']} uploaded." . ($notified !== null ? " Notified {$notified} " . Str::plural('buyer', $notified) . '.' : '')
-        );
+        $message = "Release {$data['version']} uploaded."
+            . ($notified !== null ? " Notified {$notified} " . Str::plural('buyer', $notified) . '.' : '');
+
+        return $this->uploadResponse($request, $message);
     }
 
     public function edit(Release $release): View
@@ -98,12 +99,12 @@ class ReleaseController extends Controller
         return view('admin.releases.edit', compact('release'));
     }
 
-    public function update(Request $request, Release $release): RedirectResponse
+    public function update(Request $request, Release $release): RedirectResponse|JsonResponse
     {
         $this->rejectFailedUpload($request);
 
         $data = $request->validate([
-            'notes' => 'nullable|string|max:5000',
+            'notes' => 'nullable|string|max:20000',
             'file' => 'nullable|file|mimes:zip|max:204800',
         ]);
 
@@ -122,7 +123,22 @@ class ReleaseController extends Controller
         $release->notes = $data['notes'] ?? null;
         $release->save();
 
-        return redirect()->route('admin.releases.index')->with('success', "Release {$release->version} updated.");
+        return $this->uploadResponse($request, "Release {$release->version} updated.");
+    }
+
+    /**
+     * The AJAX uploader expects JSON with a redirect target; plain form
+     * posts (JS disabled) get the classic redirect. Both carry the flash.
+     */
+    private function uploadResponse(Request $request, string $message): RedirectResponse|JsonResponse
+    {
+        $request->session()->flash('success', $message);
+
+        if ($request->expectsJson()) {
+            return response()->json(['redirect' => route('admin.releases.index')]);
+        }
+
+        return redirect()->route('admin.releases.index');
     }
 
     /**

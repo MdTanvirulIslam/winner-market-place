@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Product;
+use App\Models\Release;
 use PHPUnit\Framework\TestCase;
 
 class ProductRichTextTest extends TestCase
@@ -54,5 +55,17 @@ class ProductRichTextTest extends TestCase
         $product = $this->product(['short_description' => '<p>A &amp; B <em>store</em></p>']);
 
         $this->assertSame('A & B store', $product->shortDescriptionText());
+    }
+
+    public function test_release_notes_render_like_product_descriptions(): void
+    {
+        $legacy = (new Release)->forceFill(['notes' => "Fixed login\nFaster search"]);
+        $this->assertSame("Fixed login<br />\nFaster search", $legacy->notesHtml());
+
+        $rich = (new Release)->forceFill([
+            'notes' => '<ul><li>Fixed <strong>login</strong></li></ul><script>alert(1)</script>',
+        ]);
+        $this->assertStringContainsString('<li>Fixed <strong>login</strong></li>', $rich->notesHtml());
+        $this->assertStringNotContainsString('<script>', $rich->notesHtml());
     }
 }

@@ -85,7 +85,11 @@
                                     <span class="rounded-full bg-accent/10 px-2.5 py-0.5 text-[12px] font-bold text-accent">v{{ $release->version }}</span>
                                     <span class="text-[12px] text-muted">{{ $release->released_at?->format('d M Y') }}</span>
                                 </div>
-                                <p class="whitespace-pre-line text-[13px] leading-6 text-text">{{ $release->notes ?: 'Maintenance release.' }}</p>
+                                @if($release->notes)
+                                    <div class="rich-text text-[13px] leading-6">{!! $release->notesHtml() !!}</div>
+                                @else
+                                    <p class="text-[13px] leading-6 text-text">Maintenance release.</p>
+                                @endif
                             </div>
                         @empty
                             <p class="text-[14px] text-muted">No releases published yet.</p>

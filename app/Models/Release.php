@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\RichText;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,6 +31,14 @@ class Release extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Release notes as safe HTML — legacy plain text keeps its line breaks.
+     */
+    public function notesHtml(): string
+    {
+        return RichText::html($this->notes);
     }
 
     public function fileSizeForHumans(): string
