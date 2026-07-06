@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Support\Screenshot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -151,7 +153,16 @@ class ProductController extends Controller
         $sortOrder = (int) $product->images()->max('sort_order');
 
         foreach ($request->file('images') as $file) {
-            $path = $file->store('products/' . $product->id, 'public');
+            $extension = strtolower($file->extension());
+            $normalized = Screenshot::normalize($file->get(), $extension);
+
+            if ($normalized !== null) {
+                $path = 'products/' . $product->id . '/' . Str::random(40) . '.' . $extension;
+                Storage::disk('public')->put($path, $normalized);
+            } else {
+                // Undecodable or GD missing — keep the original upload.
+                $path = $file->store('products/' . $product->id, 'public');
+            }
 
             $product->images()->create([
                 'path' => $path,

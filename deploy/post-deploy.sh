@@ -33,6 +33,10 @@ chmod -R o+rX storage/app/public
 
 "$PHP_BIN" artisan config:clear
 
+# Screenshots uploaded before server-side processing existed get brought to
+# the standard gallery size. Idempotent — already-correct files are skipped.
+"$PHP_BIN" artisan screenshots:normalize
+
 # Diagnostics for the deploy log (readable in cPanel: storage/logs/deploy-*).
 # Note: these are the CLI values — the web values come from public/.user.ini,
 # which the host applies to the web SAPI only.

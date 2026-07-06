@@ -234,4 +234,46 @@ class CatalogTest extends TestCase
         Storage::disk('public')->assertMissing($image->path);
         $this->assertNull($image->fresh());
     }
+
+    public function test_uploaded_screenshots_are_normalized_to_the_gallery_size(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs($this->staff())->post('/admin/products', [
+            'name' => 'Wide Banner',
+            'slug' => 'wide-banner',
+            'short_description' => 'Ships with an ultra-wide screenshot.',
+            'price' => 100,
+            'status' => 'draft',
+            'images' => [UploadedFile::fake()->image('banner.png', 3000, 800)],
+        ]);
+
+        $product = Product::where('slug', 'wide-banner')->firstOrFail();
+        $image = $product->images()->first();
+        $this->assertNotNull($image);
+        $this->assertStringEndsWith('.png', $image->path);
+
+        $size = getimagesizefromstring(Storage::disk('public')->get($image->path));
+        $this->assertSame([\App\Support\Screenshot::WIDTH, \App\Support\Screenshot::HEIGHT], [$size[0], $size[1]]);
+    }
+
+    public function test_normalize_command_fixes_existing_screenshots_and_is_idempotent(): void
+    {
+        Storage::fake('public');
+        $product = Product::factory()->create();
+
+        // An odd-shaped screenshot stored before upload processing existed.
+        $path = 'products/' . $product->id . '/legacy-banner.jpg';
+        Storage::disk('public')->put($path, UploadedFile::fake()->image('legacy-banner.jpg', 1280, 456)->get());
+        $image = $product->images()->create(['path' => $path, 'sort_order' => 1]);
+
+        $this->artisan('screenshots:normalize')->assertSuccessful();
+
+        $size = getimagesizefromstring(Storage::disk('public')->get($image->path));
+        $this->assertSame([\App\Support\Screenshot::WIDTH, \App\Support\Screenshot::HEIGHT], [$size[0], $size[1]]);
+
+        $this->artisan('screenshots:normalize')
+            ->expectsOutputToContain('skipped 1')
+            ->assertSuccessful();
+    }
 }
