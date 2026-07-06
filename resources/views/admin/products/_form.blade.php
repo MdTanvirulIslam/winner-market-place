@@ -86,7 +86,7 @@
 <div>
     <label class="panel-label" for="images">{{ $product ? 'Add Screenshots' : 'Screenshots' }}</label>
     <input class="panel-input mt-1" type="file" id="images" name="images[]" accept=".jpg,.jpeg,.png,.webp" multiple>
-    <p class="mt-1 text-[12px] text-muted">JPG, PNG, or WebP — up to 10 images, 4 MB each.</p>
+    <p class="mt-1 text-[12px] text-muted">JPG, PNG, or WebP — up to 10 images, 4 MB each. Best size: 1280×720 (16:9); other shapes are cropped to fit the gallery.</p>
     <x-input-error :messages="$errors->get('images')" class="mt-2" />
     @foreach($errors->get('images.*') as $messages)
         <x-input-error :messages="$messages" class="mt-2" />
