@@ -18,12 +18,9 @@
             <div>
                 {{-- Gallery --}}
                 <div x-data="{ active: 0 }" class="mb-8">
-                    <div class="relative mb-3 aspect-[16/9] overflow-hidden rounded-lg border" style="border-color:var(--border);background:var(--bg-input);">
+                    <div class="mb-3 aspect-[16/9] overflow-hidden rounded-lg border" style="border-color:var(--border);background:var(--bg-input);">
                         @forelse($product->images as $index => $image)
-                            <div x-show="active === {{ $index }}" class="absolute inset-0 flex items-center justify-center" @if($index > 0) style="display:none" @endif>
-                                <img src="{{ $image->url() }}" alt="" aria-hidden="true" class="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl">
-                                <img src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" @if($index > 0) loading="lazy" @endif class="relative h-full max-h-[85%] w-auto max-w-[85%] object-contain">
-                            </div>
+                            <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" @if($index > 0) loading="lazy" style="display:none" @endif class="h-full w-full object-cover">
                         @empty
                             <div class="flex h-full w-full items-center justify-center text-5xl text-muted"><span class="icon" data-icon="boxes"></span></div>
                         @endforelse
