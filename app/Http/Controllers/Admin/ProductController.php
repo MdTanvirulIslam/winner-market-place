@@ -93,7 +93,9 @@ class ProductController extends Controller
 
     public function destroyImage(Product $product, ProductImage $image): RedirectResponse
     {
-        abort_unless($image->product_id === $product->id, 404);
+        // Int-cast both sides: shared-hosting PDO drivers return integer
+        // columns as strings, which a strict comparison would 404 on.
+        abort_unless((int) $image->product_id === (int) $product->id, 404);
 
         Storage::disk('public')->delete($image->path);
         $image->delete();

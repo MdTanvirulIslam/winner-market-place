@@ -1,4 +1,4 @@
-<x-store-layout :title="$product->name" :meta-description="$product->shortDescriptionText()" :og-image="$product->images->first()?->url()">
+<x-store-layout :title="$product->name" :meta-description="$product->shortDescriptionText()" :og-image="$product->coverUrl()">
     <div class="mx-auto max-w-6xl px-4 py-10">
         {{-- Breadcrumb --}}
         <nav class="mb-6 flex items-center gap-2 text-[13px] text-muted">
@@ -22,7 +22,7 @@
                         @forelse($product->images as $index => $image)
                             <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" @if($index > 0) loading="lazy" style="display:none" @endif class="h-full w-full object-cover">
                         @empty
-                            <div class="flex h-full w-full items-center justify-center text-5xl text-muted"><span class="icon" data-icon="boxes"></span></div>
+                            <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                         @endforelse
                     </div>
                     @if($product->images->count() > 1)

@@ -8,9 +8,7 @@
                 <h5 class="mb-4 text-sm font-bold text-text">Order Summary</h5>
                 <div class="mb-4 flex items-center gap-3">
                     <div class="h-14 w-20 shrink-0 overflow-hidden rounded-sm" style="background:var(--bg-input);">
-                        @if($product->images->isNotEmpty())
-                            <img src="{{ $product->images->first()->url() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
-                        @endif
+                        <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     </div>
                     <div>
                         <div class="text-sm font-bold text-text">{{ $product->name }}</div>

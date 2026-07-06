@@ -1,10 +1,6 @@
 <a href="{{ route('store.products.show', $product->slug) }}" class="group block overflow-hidden rounded-lg border bg-card shadow transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style="border-color:var(--border);">
     <div class="relative aspect-[16/10] overflow-hidden" style="background:var(--bg-input);">
-        @if($product->images->isNotEmpty())
-            <img src="{{ $product->images->first()->url() }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
-        @else
-            <div class="flex h-full w-full items-center justify-center text-4xl text-muted"><span class="icon" data-icon="boxes"></span></div>
-        @endif
+        <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
         @if($product->isOnSale())
             <span class="absolute left-3 top-3 rounded-full bg-danger px-2.5 py-1 text-[11px] font-bold text-white">SALE</span>
         @endif

@@ -74,6 +74,15 @@ class StoreBrowsingTest extends TestCase
             ->assertSee('Added dark mode.');
     }
 
+    public function test_product_without_screenshots_shows_the_placeholder_image(): void
+    {
+        $product = Product::factory()->published()->create();
+
+        $this->get('/products/' . $product->slug)
+            ->assertOk()
+            ->assertSee('images/product-placeholder.jpg');
+    }
+
     public function test_draft_products_are_not_publicly_visible(): void
     {
         $draft = Product::factory()->create();

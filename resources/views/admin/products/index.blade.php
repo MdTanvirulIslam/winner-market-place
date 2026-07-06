@@ -37,11 +37,7 @@
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="h-10 w-16 shrink-0 overflow-hidden rounded-sm" style="background:var(--bg-input);">
-                                        @if($product->images->isNotEmpty())
-                                            <img src="{{ $product->images->first()->url() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
-                                        @else
-                                            <div class="flex h-full w-full items-center justify-center text-muted"><span class="icon" data-icon="boxes"></span></div>
-                                        @endif
+                                        <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                                     </div>
                                     <span class="font-semibold">{{ $product->name }}</span>
                                 </div>

@@ -16,9 +16,7 @@
                         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="h-12 w-16 shrink-0 overflow-hidden rounded-sm" style="background:var(--bg-input);">
-                                    @if($order->product?->images->isNotEmpty())
-                                        <img src="{{ $order->product->images->first()->url() }}" alt="{{ $order->product_name }}" class="h-full w-full object-cover">
-                                    @endif
+                                    <img src="{{ $order->product?->coverUrl() ?? asset('images/product-placeholder.jpg') }}" alt="{{ $order->product_name }}" class="h-full w-full object-cover">
                                 </div>
                                 <div>
                                     <div class="text-sm font-bold text-text">{{ $order->product_name }}</div>

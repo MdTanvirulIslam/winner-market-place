@@ -123,4 +123,12 @@ class Product extends Model
     {
         return $this->releases->first();
     }
+
+    /**
+     * The first screenshot, or the shared placeholder when none exist.
+     */
+    public function coverUrl(): string
+    {
+        return $this->images->first()?->url() ?? asset('images/product-placeholder.jpg');
+    }
 }

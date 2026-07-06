@@ -37,11 +37,36 @@
                         <div class="mb-3 flex items-center gap-3 border-b pb-3 last:border-b-0" style="border-color:var(--border);">
                             <img src="{{ $image->url() }}" alt="Screenshot" class="h-14 w-24 rounded-sm object-cover">
                             <span class="flex-1 text-[12px] text-muted">#{{ $image->sort_order }}</span>
-                            <form method="POST" action="{{ route('admin.products.images.destroy', [$product, $image]) }}" onsubmit="return confirm('Remove this screenshot? The image file will be deleted from the server.');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-[13px] font-semibold text-danger">Remove</button>
-                            </form>
+                            <div x-data="{ open: false }">
+                                <button type="button" @click="open = true" class="text-[13px] font-semibold text-danger">Remove</button>
+
+                                {{-- Self-contained Alpine confirm — intentionally not using the
+                                     shared AppModals helper, which silently fails in production.
+                                     Teleported to <body>: the .animate-in ancestor retains a
+                                     transform, which would trap position:fixed inside the card. --}}
+                                <template x-teleport="body">
+                                <div x-show="open" x-transition.opacity.duration.200ms style="display:none" @click.self="open = false" @keydown.escape.window="open = false" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
+                                    <div class="w-full max-w-sm rounded-xl border p-6 shadow-2xl" style="background:var(--bg-card);border-color:var(--border);" @click.stop>
+                                        <div class="mb-4 flex items-start gap-3">
+                                            <span class="icon mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-danger" style="background:rgba(239,68,68,0.12);" data-icon="triangle-alert"></span>
+                                            <div>
+                                                <h5 class="text-[15px] font-bold text-text">Remove this screenshot?</h5>
+                                                <p class="mt-1 text-[13px] leading-6 text-muted">The image file will be permanently deleted from the server. This cannot be undone.</p>
+                                            </div>
+                                        </div>
+                                        <img src="{{ $image->url() }}" alt="Screenshot to remove" class="mb-4 aspect-video w-full rounded-lg border object-cover" style="border-color:var(--border);">
+                                        <div class="flex justify-end gap-2.5">
+                                            <button type="button" @click="open = false" class="rounded-lg border px-4 py-2 text-[13px] font-semibold text-text" style="border-color:var(--border);">Cancel</button>
+                                            <form method="POST" action="{{ route('admin.products.images.destroy', [$product, $image]) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-lg bg-danger px-4 py-2 text-[13px] font-semibold text-white transition-opacity duration-200 hover:opacity-90">Remove Screenshot</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                </template>
+                            </div>
                         </div>
                     @empty
                         <p class="text-[13px] text-muted">No screenshots yet — add some in the form.</p>
