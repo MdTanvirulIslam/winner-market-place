@@ -8,13 +8,14 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <script>
-            if (localStorage.getItem('winnerTAM-dark') === 'true') {
+            // Matches the storefront: dark unless the visitor chose light.
+            if (localStorage.getItem('winnerTAM-dark') !== 'false') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
         </script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body>
+    <body class="store-theme">
         <main class="min-h-screen bg-bg px-4 py-6 transition-colors duration-300">
             <div class="mx-auto flex min-h-[calc(100vh-48px)] max-w-6xl flex-col gap-8">
                 <div class="flex items-center justify-between">

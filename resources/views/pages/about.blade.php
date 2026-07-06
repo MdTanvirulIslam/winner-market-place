@@ -1,7 +1,12 @@
 <x-store-layout title="About Us" meta-description="Winner Devs builds premium, licensed web applications — news portals, POS, inventory, HRM — delivered and updated automatically.">
+    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+        <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
+            <div class="s-eyebrow mb-5">Who we are</div>
+            <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">About {{ config('app.name') }}</h1>
+        </div>
+    </div>
     <div class="mx-auto max-w-3xl px-4 py-12">
-        <h1 class="mb-6 font-heading text-3xl font-extrabold text-text">About {{ config('app.name') }}</h1>
-        <div class="space-y-4 text-[15px] leading-7 text-muted">
+        <div class="s-card space-y-4 p-8 text-[15px] leading-7 text-muted sm:p-10">
             <p>
                 {{ config('app.name') }} is the official store of <strong class="text-text">Winner Devs</strong> —
                 a software team building production-ready web applications for businesses in Bangladesh and beyond:
@@ -19,7 +24,7 @@
             </ul>
             <p>
                 Pay the way you already do — bKash, Nagad, Rocket, or card via SSLCommerz — or arrange a
-                manual payment through <a href="{{ route('store.contact') }}" class="font-semibold text-accent">our contact page</a>.
+                manual payment through <a href="{{ route('store.contact') }}" class="font-semibold text-accent-light">our contact page</a>.
             </p>
         </div>
     </div>

@@ -1,9 +1,13 @@
 <x-store-layout title="Privacy Policy" meta-description="How Winner Marketplace collects, uses, and protects your data.">
+    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+        <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
+            <div class="s-eyebrow mb-5">Legal</div>
+            <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Privacy Policy</h1>
+            <p class="mt-3 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
+        </div>
+    </div>
     <div class="mx-auto max-w-3xl px-4 py-12">
-        <h1 class="mb-2 font-heading text-3xl font-extrabold text-text">Privacy Policy</h1>
-        <p class="mb-8 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
-
-        <div class="space-y-6 text-[15px] leading-7 text-muted">
+        <div class="s-card space-y-6 p-8 text-[15px] leading-7 text-muted sm:p-10">
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">What we collect</h2>
                 <p>Your account details (name, email, phone), your orders, and download activity (versions and IP addresses, for abuse prevention). Passwords are stored hashed — we cannot read them.</p>
@@ -26,7 +30,7 @@
             </section>
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">Your choices</h2>
-                <p>You can update your details or delete your account from your profile page. Deleting your account does not erase completed order records, which we keep for accounting. For any privacy request, <a href="{{ route('store.contact') }}" class="font-semibold text-accent">contact us</a>.</p>
+                <p>You can update your details or delete your account from your profile page. Deleting your account does not erase completed order records, which we keep for accounting. For any privacy request, <a href="{{ route('store.contact') }}" class="font-semibold text-accent-light">contact us</a>.</p>
             </section>
         </div>
     </div>

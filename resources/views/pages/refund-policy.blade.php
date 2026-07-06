@@ -1,9 +1,13 @@
 <x-store-layout title="Refund Policy" meta-description="Refund policy for digital products purchased from Winner Marketplace.">
+    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+        <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
+            <div class="s-eyebrow mb-5">Legal</div>
+            <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Refund Policy</h1>
+            <p class="mt-3 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
+        </div>
+    </div>
     <div class="mx-auto max-w-3xl px-4 py-12">
-        <h1 class="mb-2 font-heading text-3xl font-extrabold text-text">Refund Policy</h1>
-        <p class="mb-8 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
-
-        <div class="space-y-6 text-[15px] leading-7 text-muted">
+        <div class="s-card space-y-6 p-8 text-[15px] leading-7 text-muted sm:p-10">
             <p>
                 We sell digital software products delivered instantly. Because a delivered product cannot be
                 "returned", refunds work as follows:
@@ -27,7 +31,7 @@
             </section>
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">How to request one</h2>
-                <p><a href="{{ route('store.contact') }}" class="font-semibold text-accent">Contact us</a> with your order number and a description of the problem. Approved refunds are returned through the original payment channel (SSLCommerz refunds typically take 7–10 working days to appear). After a refund, the product's license is suspended and downloads are disabled.</p>
+                <p><a href="{{ route('store.contact') }}" class="font-semibold text-accent-light">Contact us</a> with your order number and a description of the problem. Approved refunds are returned through the original payment channel (SSLCommerz refunds typically take 7–10 working days to appear). After a refund, the product's license is suspended and downloads are disabled.</p>
             </section>
         </div>
     </div>

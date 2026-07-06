@@ -1,31 +1,31 @@
-<a href="{{ route('store.products.show', $product->slug) }}" class="group block overflow-hidden rounded-lg border bg-card shadow transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" style="border-color:var(--border);">
+<a href="{{ route('store.products.show', $product->slug) }}" class="s-card s-card-hover group block overflow-hidden">
     <div class="relative aspect-[16/10] overflow-hidden" style="background:var(--bg-input);">
-        <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
+        <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
         @if($product->isOnSale())
-            <span class="absolute left-3 top-3 rounded-full bg-danger px-2.5 py-1 text-[11px] font-bold text-white">SALE</span>
+            <span class="s-badge-sale absolute left-3 top-3">SALE</span>
         @endif
     </div>
-    <div class="p-4">
+    <div class="p-5">
         @if($product->category)
-            <div class="mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-accent">{{ $product->category->name }}</div>
+            <div class="mb-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-accent-light">{{ $product->category->name }}</div>
         @endif
-        <h5 class="mb-1 text-[15px] font-bold text-text">{{ $product->name }}</h5>
+        <h5 class="mb-1 font-heading text-[16px] font-bold text-text transition-colors duration-300 group-hover:text-accent-light">{{ $product->name }}</h5>
         @if(($product->approved_reviews_count ?? 0) > 0)
-            <div class="mb-1 flex items-center gap-1.5 text-[12px] text-muted">
+            <div class="mb-1.5 flex items-center gap-1.5 text-[12px] text-muted">
                 @include('partials.store.stars', ['rating' => (float) $product->approved_reviews_avg_rating])
                 <span>({{ $product->approved_reviews_count }})</span>
             </div>
         @endif
-        <p class="mb-3 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->shortDescriptionText() }}</p>
-        <div class="flex items-center justify-between">
-            <div class="text-[15px] font-extrabold text-text">
+        <p class="mb-4 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->shortDescriptionText() }}</p>
+        <div class="flex items-center justify-between border-t pt-4" style="border-color:var(--s-glass-border);">
+            <div class="font-heading text-[16px] font-extrabold text-text">
                 @if($product->isOnSale())
                     <span class="mr-1 text-[13px] font-semibold text-muted line-through">{{ format_price($product->price) }}</span>{{ format_price($product->sale_price) }}
                 @else
                     {{ format_price($product->price) }}
                 @endif
             </div>
-            <span class="text-[13px] font-semibold text-accent">View details</span>
+            <span class="inline-flex items-center gap-1 text-[13px] font-semibold text-accent-light transition-transform duration-300 group-hover:translate-x-0.5">View details <span class="icon text-[11px]" data-icon="chevron-right"></span></span>
         </div>
     </div>
 </a>

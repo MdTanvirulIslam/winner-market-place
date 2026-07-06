@@ -1,9 +1,13 @@
 <x-store-layout title="Terms of Service" meta-description="Terms of service for purchasing and using Winner Devs applications.">
+    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+        <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
+            <div class="s-eyebrow mb-5">Legal</div>
+            <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Terms of Service</h1>
+            <p class="mt-3 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
+        </div>
+    </div>
     <div class="mx-auto max-w-3xl px-4 py-12">
-        <h1 class="mb-2 font-heading text-3xl font-extrabold text-text">Terms of Service</h1>
-        <p class="mb-8 text-[13px] text-muted">Last updated: {{ date('d F Y') }}</p>
-
-        <div class="space-y-6 text-[15px] leading-7 text-muted">
+        <div class="s-card space-y-6 p-8 text-[15px] leading-7 text-muted sm:p-10">
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">1. The service</h2>
                 <p>{{ config('app.name') }} sells licensed copies of software applications developed by Winner Devs. By placing an order you agree to these terms.</p>
@@ -26,7 +30,7 @@
             </section>
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">6. Refunds</h2>
-                <p>Refunds are governed by our <a href="{{ route('store.refund-policy') }}" class="font-semibold text-accent">Refund Policy</a>. A refunded order's license is suspended and downloads are revoked.</p>
+                <p>Refunds are governed by our <a href="{{ route('store.refund-policy') }}" class="font-semibold text-accent-light">Refund Policy</a>. A refunded order's license is suspended and downloads are revoked.</p>
             </section>
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">7. Acceptable use</h2>
@@ -38,7 +42,7 @@
             </section>
             <section>
                 <h2 class="mb-2 font-heading text-lg font-bold text-text">9. Changes</h2>
-                <p>We may update these terms; the version published on this page at the time of your order applies to that order. Questions? <a href="{{ route('store.contact') }}" class="font-semibold text-accent">Contact us</a>.</p>
+                <p>We may update these terms; the version published on this page at the time of your order applies to that order. Questions? <a href="{{ route('store.contact') }}" class="font-semibold text-accent-light">Contact us</a>.</p>
             </section>
         </div>
     </div>

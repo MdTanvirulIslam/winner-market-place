@@ -1,23 +1,23 @@
 <x-store-layout title="Products" meta-description="Browse all Winner Devs applications — search by name or filter by category.">
-    <div class="mx-auto max-w-6xl px-4 py-10">
-        <div class="mb-8">
-            <h1 class="font-heading text-3xl font-extrabold text-text">Products</h1>
-            <p class="mt-1 text-[14px] text-muted">{{ $products->total() }} {{ Str::plural('application', $products->total()) }} available</p>
+    <div class="mx-auto max-w-6xl px-4 py-12">
+        <div class="mb-10">
+            <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Products</h1>
+            <p class="mt-2 text-[14px] text-muted">{{ $products->total() }} {{ Str::plural('application', $products->total()) }} available</p>
         </div>
 
         <div class="grid gap-8 lg:grid-cols-[240px_1fr]">
             {{-- Filter sidebar --}}
             <aside>
-                <div class="rounded-lg border p-5" style="border-color:var(--border);background:var(--bg-card);">
-                    <h5 class="mb-3 text-sm font-bold text-text">Categories</h5>
-                    <div class="space-y-2 text-[13px]">
+                <div class="s-card p-5 lg:sticky lg:top-24">
+                    <h5 class="mb-4 text-[13px] font-bold uppercase tracking-[0.14em] text-text">Categories</h5>
+                    <div class="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:gap-2.5 lg:overflow-visible lg:pb-0">
                         <a href="{{ route('store.products', array_filter(['q' => request('q'), 'sort' => request('sort')])) }}"
-                           class="block font-semibold {{ request('category') ? 'text-muted hover:text-accent' : 'text-accent' }}">All Products</a>
+                           class="s-pill shrink-0 justify-between lg:flex {{ request('category') ? '' : 'active' }}">All Products</a>
                         @foreach($categories as $category)
                             <a href="{{ route('store.products', array_filter(['category' => $category->slug, 'q' => request('q'), 'sort' => request('sort')])) }}"
-                               class="flex items-center justify-between font-semibold {{ request('category') === $category->slug ? 'text-accent' : 'text-muted hover:text-accent' }}">
+                               class="s-pill shrink-0 justify-between gap-3 lg:flex {{ request('category') === $category->slug ? 'active' : '' }}">
                                 <span>{{ $category->name }}</span>
-                                <span class="text-[11px]">{{ $category->products_count }}</span>
+                                <span class="text-[11px] opacity-70">{{ $category->products_count }}</span>
                             </a>
                         @endforeach
                     </div>
@@ -26,7 +26,7 @@
 
             {{-- Results --}}
             <div>
-                <form method="GET" action="{{ route('store.products') }}" class="mb-6 flex flex-wrap items-center gap-2">
+                <form method="GET" action="{{ route('store.products') }}" class="mb-7 flex flex-wrap items-center gap-2">
                     @if(request('category'))
                         <input type="hidden" name="category" value="{{ request('category') }}">
                     @endif
@@ -39,22 +39,22 @@
                         <option value="price_asc" @selected(request('sort') === 'price_asc')>Price: low to high</option>
                         <option value="price_desc" @selected(request('sort') === 'price_desc')>Price: high to low</option>
                     </select>
-                    <button type="submit" class="rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-accent-hover">Apply</button>
+                    <button type="submit" class="s-btn !py-3">Apply</button>
                 </form>
 
                 @if($products->isEmpty())
-                    <div class="rounded-lg border p-12 text-center text-muted" style="border-color:var(--border);background:var(--bg-card);">
+                    <div class="s-card p-14 text-center text-muted">
                         <span class="icon mx-auto mb-3 block text-3xl" data-icon="search"></span>
                         No products match your search.
-                        <a href="{{ route('store.products') }}" class="mt-1 block font-semibold text-accent">Clear filters</a>
+                        <a href="{{ route('store.products') }}" class="mt-2 block font-semibold text-accent-light">Clear filters</a>
                     </div>
                 @else
-                    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                         @foreach($products as $product)
                             @include('partials.store.product-card', ['product' => $product])
                         @endforeach
                     </div>
-                    <div class="mt-8">{{ $products->links() }}</div>
+                    <div class="mt-10">{{ $products->links() }}</div>
                 @endif
             </div>
         </div>
