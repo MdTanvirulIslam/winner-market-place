@@ -6,19 +6,19 @@
         @endunless
 
         <div class="space-y-4">
-            <div class="rounded-lg border p-6" style="border-color:var(--border);background:var(--bg-card);">
+            <div class="s-card p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.update-profile-information-form')
                 </div>
             </div>
 
-            <div class="rounded-lg border p-6" style="border-color:var(--border);background:var(--bg-card);">
+            <div class="s-card p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.update-password-form')
                 </div>
             </div>
 
-            <div class="rounded-lg border p-6" style="border-color:var(--border);background:var(--bg-card);">
+            <div class="s-card p-6">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
                 </div>

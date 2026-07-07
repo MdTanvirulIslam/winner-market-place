@@ -1,5 +1,5 @@
 <x-store-layout title="About Us" meta-description="Winner Devs builds premium, licensed web applications — news portals, POS, inventory, HRM — delivered and updated automatically.">
-    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+    <div class="s-hero border-b border-border">
         <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
             <div class="s-eyebrow mb-5">Who we are</div>
             <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">About {{ config('app.name') }}</h1>

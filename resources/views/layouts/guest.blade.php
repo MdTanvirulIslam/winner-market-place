@@ -8,8 +8,8 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <script>
-            // Matches the storefront: dark unless the visitor chose light.
-            if (localStorage.getItem('winnerTAM-dark') !== 'false') {
+            // Matches the storefront: light unless the visitor chose dark.
+            if (localStorage.getItem('winnerTAM-dark') === 'true') {
                 document.documentElement.setAttribute('data-theme', 'dark');
             }
         </script>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="flex flex-1 items-center justify-center">
-                    <div class="animate-in opacity-0 w-full max-w-md rounded-[28px] border bg-card p-7 shadow-lg" style="border-color:var(--border);">
+                    <div class="animate-in opacity-0 w-full max-w-md rounded-[28px] border border-border bg-card p-7 shadow-lg">
                         {{ $slot }}
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <x-store-layout title="Contact Us" meta-description="Get in touch with the Winner Devs team — presales questions, support, or manual payment arrangements.">
-    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+    <div class="s-hero border-b border-border">
         <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
             <div class="s-eyebrow mb-5">We reply fast</div>
             <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Contact Us</h1>

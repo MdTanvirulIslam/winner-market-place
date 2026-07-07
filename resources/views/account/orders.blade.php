@@ -4,15 +4,15 @@
         @include('partials.store.account-nav')
 
         @if($orders->isEmpty())
-            <div class="rounded-lg border p-12 text-center text-muted" style="border-color:var(--border);background:var(--bg-card);">
+            <div class="s-card p-12 text-center text-muted">
                 <span class="icon mx-auto mb-3 block text-3xl" data-icon="shopping-cart"></span>
                 You haven't ordered anything yet.
-                <a href="{{ route('store.products') }}" class="mt-1 block font-semibold text-accent">Browse products</a>
+                <a href="{{ route('store.products') }}" class="mt-1 block font-semibold text-accent-light">Browse products</a>
             </div>
         @else
             <div class="space-y-3">
                 @foreach($orders as $order)
-                    <a href="{{ route('account.orders.show', $order) }}" class="flex flex-wrap items-center justify-between gap-3 rounded-lg border p-5 transition-all duration-300 hover:shadow" style="border-color:var(--border);background:var(--bg-card);">
+                    <a href="{{ route('account.orders.show', $order) }}" class="s-card s-card-hover flex flex-wrap items-center justify-between gap-3 p-5">
                         <div>
                             <div class="text-sm font-bold text-text">{{ $order->product_name }}</div>
                             <div class="text-[12px] text-muted">{{ $order->order_no }} · {{ $order->created_at->format('d M Y') }}</div>

@@ -1,5 +1,5 @@
 <x-store-layout title="Privacy Policy" meta-description="How Winner Marketplace collects, uses, and protects your data.">
-    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+    <div class="s-hero border-b border-border">
         <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
             <div class="s-eyebrow mb-5">Legal</div>
             <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Privacy Policy</h1>

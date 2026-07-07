@@ -1,5 +1,5 @@
 <x-store-layout title="Terms of Service" meta-description="Terms of service for purchasing and using Winner Devs applications.">
-    <div class="s-hero border-b" style="border-color:var(--s-glass-border);">
+    <div class="s-hero border-b border-border">
         <div class="relative mx-auto max-w-3xl px-4 py-14 text-center">
             <div class="s-eyebrow mb-5">Legal</div>
             <h1 class="font-heading text-3xl font-extrabold tracking-tight text-text sm:text-4xl">Terms of Service</h1>

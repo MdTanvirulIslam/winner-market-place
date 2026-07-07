@@ -10,7 +10,7 @@
             <div class="s-card p-6">
                 <h5 class="mb-4 font-heading text-sm font-bold text-text">Order Summary</h5>
                 <div class="mb-4 flex items-center gap-3">
-                    <div class="h-14 w-20 shrink-0 overflow-hidden rounded-lg" style="background:var(--bg-input);">
+                    <div class="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-input">
                         <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                     </div>
                     <div>
@@ -20,7 +20,7 @@
                 </div>
                 @php($couponDiscount = $coupon?->discountFor($product->effectivePrice()) ?? 0.0)
                 @php($payable = round($product->effectivePrice() - $couponDiscount, 2))
-                <div class="space-y-2.5 border-t pt-4 text-[13px]" style="border-color:var(--s-glass-border);">
+                <div class="space-y-2.5 border-t border-border pt-4 text-[13px]">
                     @if($product->isOnSale())
                         <div class="flex justify-between text-muted"><span>Regular price</span><span class="line-through">{{ format_price($product->price) }}</span></div>
                         <div class="flex justify-between text-muted"><span>Discount</span><span>−{{ format_price((float) $product->price - $product->effectivePrice()) }}</span></div>
@@ -35,7 +35,7 @@
                 </div>
 
                 {{-- Coupon --}}
-                <div class="mt-4 border-t pt-4" style="border-color:var(--s-glass-border);">
+                <div class="mt-4 border-t border-border pt-4">
                     @if($coupon)
                         <form method="POST" action="{{ route('store.checkout.coupon.remove', $product->slug) }}" class="flex items-center justify-between">
                             @csrf

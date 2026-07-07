@@ -18,9 +18,9 @@
             <div>
                 {{-- Gallery --}}
                 <div x-data="{ active: 0 }" class="mb-10">
-                    <div class="mb-3 aspect-[16/9] overflow-hidden rounded-2xl border" style="border-color:var(--s-glass-border);background:var(--bg-input);">
+                    <div class="s-card mb-3 aspect-[16/9] overflow-hidden !rounded-2xl bg-input">
                         @forelse($product->images as $index => $image)
-                            <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" @if($index > 0) loading="lazy" style="display:none" @endif class="h-full w-full object-cover">
+                            <img x-show="active === {{ $index }}" src="{{ $image->url() }}" alt="{{ $product->name }} screenshot {{ $index + 1 }}" @if($index > 0) loading="lazy" x-cloak @endif class="h-full w-full object-cover">
                         @empty
                             <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" class="h-full w-full object-cover">
                         @endforelse
@@ -30,7 +30,7 @@
                             @foreach($product->images as $index => $image)
                                 <button type="button" @click="active = {{ $index }}"
                                         :class="active === {{ $index }} ? 'ring-2 ring-[var(--accent)]' : 'opacity-60 hover:opacity-100'"
-                                        class="h-16 w-24 shrink-0 overflow-hidden rounded-lg border transition-all duration-300" style="border-color:var(--s-glass-border);">
+                                        class="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-border transition-all duration-300">
                                     <img src="{{ $image->url() }}" alt="Thumbnail {{ $index + 1 }}" class="h-full w-full object-cover">
                                 </button>
                             @endforeach
@@ -54,7 +54,7 @@
 
                 {{-- Tabs --}}
                 <div x-data="{ tab: 'description' }">
-                    <div class="mb-6 flex gap-1 overflow-x-auto border-b" style="border-color:var(--s-glass-border);">
+                    <div class="mb-6 flex gap-1 overflow-x-auto border-b border-border">
                         <button type="button" @click="tab = 'description'" :class="tab === 'description' ? 'border-[var(--accent)] text-accent-light' : 'border-transparent text-muted hover:text-text'" class="shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition-colors duration-300">Description</button>
                         <button type="button" @click="tab = 'features'" :class="tab === 'features' ? 'border-[var(--accent)] text-accent-light' : 'border-transparent text-muted hover:text-text'" class="shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition-colors duration-300">Features</button>
                         <button type="button" @click="tab = 'changelog'" :class="tab === 'changelog' ? 'border-[var(--accent)] text-accent-light' : 'border-transparent text-muted hover:text-text'" class="shrink-0 border-b-2 px-4 py-3 text-sm font-semibold transition-colors duration-300">Changelog</button>
@@ -69,7 +69,7 @@
                         @endif
                     </div>
 
-                    <div x-show="tab === 'features'" style="display:none">
+                    <div x-show="tab === 'features'" x-cloak>
                         @if($product->featureList())
                             <ul class="space-y-2.5">
                                 @foreach($product->featureList() as $feature)
@@ -81,11 +81,11 @@
                         @endif
                     </div>
 
-                    <div x-show="tab === 'changelog'" style="display:none">
+                    <div x-show="tab === 'changelog'" x-cloak>
                         @forelse($product->releases as $release)
                             <div class="s-card mb-4 p-5">
                                 <div class="mb-2 flex items-center gap-3">
-                                    <span class="rounded-full px-2.5 py-0.5 text-[12px] font-bold text-accent-light" style="background:var(--accent-subtle);">v{{ $release->version }}</span>
+                                    <span class="rounded-full bg-accent-subtle px-2.5 py-0.5 text-[12px] font-bold text-accent-light">v{{ $release->version }}</span>
                                     <span class="text-[12px] text-muted">{{ $release->released_at?->format('d M Y') }}</span>
                                 </div>
                                 @if($release->notes)
@@ -99,7 +99,7 @@
                         @endforelse
                     </div>
 
-                    <div x-show="tab === 'reviews'" style="display:none">
+                    <div x-show="tab === 'reviews'" x-cloak>
                         {{-- Write a review --}}
                         @if($ownReview)
                             <div class="s-card mb-5 p-4 text-[13px]">
@@ -118,8 +118,8 @@
                                     <input type="hidden" name="rating" :value="rating">
                                     <div class="flex items-center gap-1">
                                         @for($i = 1; $i <= 5; $i++)
-                                            <button type="button" @click="rating = {{ $i }}" class="text-2xl leading-none transition-colors duration-150"
-                                                    :style="rating >= {{ $i }} ? 'color:#f59e0b;' : 'color:var(--border);'"
+                                            <button type="button" @click="rating = {{ $i }}" class="s-star text-2xl leading-none transition-colors duration-150"
+                                                    :class="rating >= {{ $i }} ? 'is-active' : ''"
                                                     aria-label="Rate {{ $i }} {{ Str::plural('star', $i) }}">&#9733;</button>
                                         @endfor
                                     </div>
@@ -142,7 +142,7 @@
                                 <div class="mb-2 flex flex-wrap items-center gap-2">
                                     @include('partials.store.stars', ['rating' => $review->rating])
                                     <span class="text-[13px] font-bold text-text">{{ $review->user->name }}</span>
-                                    <span class="rounded-full px-2 py-0.5 text-[11px] font-bold text-accent-light" style="background:var(--accent-subtle);">Verified buyer</span>
+                                    <span class="rounded-full bg-accent-subtle px-2 py-0.5 text-[11px] font-bold text-accent-light">Verified buyer</span>
                                     <span class="text-[12px] text-muted">{{ $review->created_at->format('d M Y') }}</span>
                                 </div>
                                 <p class="whitespace-pre-line text-[13px] leading-6 text-text">{{ $review->body }}</p>
@@ -158,7 +158,6 @@
             <aside>
                 <div class="sticky top-24 space-y-4">
                     <div class="s-card relative overflow-hidden p-6">
-                        <div class="pointer-events-none absolute inset-0" style="background:radial-gradient(320px circle at 100% 0%, var(--accent-subtle), transparent 70%);"></div>
                         <div class="relative">
                             <div class="mb-4 flex items-end gap-2">
                                 <span class="font-heading text-3xl font-extrabold text-text">{{ format_price($product->effectivePrice()) }}</span>
@@ -177,7 +176,7 @@
                                 <a href="{{ $product->demo_url }}" target="_blank" rel="noopener" class="s-btn-ghost w-full">Live Demo</a>
                             @endif
 
-                            <div class="mt-5 space-y-2.5 border-t pt-5 text-[12px] text-muted" style="border-color:var(--s-glass-border);">
+                            <div class="mt-5 space-y-2.5 border-t border-border pt-5 text-[12px] text-muted">
                                 <div class="flex items-center gap-2"><span class="icon text-accent-light" data-icon="key-round"></span> Single-site license, activated automatically</div>
                                 <div class="flex items-center gap-2"><span class="icon text-accent-light" data-icon="download"></span> Instant download after payment</div>
                                 <div class="flex items-center gap-2"><span class="icon text-accent-light" data-icon="badge-check"></span> Free updates for life</div>

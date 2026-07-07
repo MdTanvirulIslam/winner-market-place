@@ -21,8 +21,8 @@
         <meta name="twitter:card" content="summary_large_image">
     @endif
     <script>
-        // The storefront is dark-first: dark unless the visitor chose light.
-        if (localStorage.getItem('winnerTAM-dark') !== 'false') {
+        // The storefront is light-first: dark only when the visitor chose it.
+        if (localStorage.getItem('winnerTAM-dark') === 'true') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
     </script>
@@ -57,13 +57,13 @@
                 @endauth
                 <button type="button" class="topbar-btn md:hidden" @click="mobileOpen = !mobileOpen" aria-label="Toggle menu">
                     <span class="icon" data-icon="menu" x-show="!mobileOpen"></span>
-                    <span class="icon" data-icon="x" x-show="mobileOpen" style="display:none"></span>
+                    <span class="icon" data-icon="x" x-show="mobileOpen" x-cloak></span>
                 </button>
             </div>
         </div>
 
         {{-- Mobile menu --}}
-        <div x-show="mobileOpen" x-transition.opacity.duration.150ms class="border-t md:hidden" style="display:none;border-color:var(--s-glass-border);">
+        <div x-show="mobileOpen" x-transition.opacity.duration.150ms x-cloak class="border-t border-border md:hidden">
             <nav class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4">
                 <a href="{{ route('home') }}" class="s-nav-link rounded-lg px-3 py-2.5 {{ request()->routeIs('home') ? 'active' : '' }}">Home</a>
                 <a href="{{ route('store.products') }}" class="s-nav-link rounded-lg px-3 py-2.5 {{ request()->routeIs('store.products*') ? 'active' : '' }}">Products</a>
@@ -91,6 +91,32 @@
 
     <footer class="bg-bg">
         <div class="s-footer-line"></div>
+
+        {{-- Contact strip --}}
+        <div class="mx-auto grid max-w-6xl gap-6 border-b border-border px-4 py-10 sm:grid-cols-3">
+            <a href="{{ route('store.contact') }}" class="group flex items-center gap-3.5">
+                <span class="s-contact-icon"><span class="icon" data-icon="mail"></span></span>
+                <span>
+                    <span class="block text-[13px] font-bold text-text">Contact Us</span>
+                    <span class="block text-[12px] text-muted transition-colors duration-300 group-hover:text-accent-light">Presales &amp; support — we reply fast</span>
+                </span>
+            </a>
+            <a href="{{ route('account.downloads') }}" class="group flex items-center gap-3.5">
+                <span class="s-contact-icon"><span class="icon" data-icon="download"></span></span>
+                <span>
+                    <span class="block text-[13px] font-bold text-text">Instant Delivery</span>
+                    <span class="block text-[12px] text-muted transition-colors duration-300 group-hover:text-accent-light">License &amp; downloads right after payment</span>
+                </span>
+            </a>
+            <a href="{{ route('store.refund-policy') }}" class="group flex items-center gap-3.5">
+                <span class="s-contact-icon"><span class="icon" data-icon="shield"></span></span>
+                <span>
+                    <span class="block text-[13px] font-bold text-text">Buyer Protection</span>
+                    <span class="block text-[12px] text-muted transition-colors duration-300 group-hover:text-accent-light">Clear refund policy on every purchase</span>
+                </span>
+            </a>
+        </div>
+
         <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
             <div>
                 <a href="{{ route('home') }}" class="mb-4 flex items-center gap-2.5">
@@ -128,7 +154,7 @@
                 </div>
             </div>
         </div>
-        <div class="border-t py-5" style="border-color:var(--s-glass-border);">
+        <div class="border-t border-border py-5">
             <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 text-[12px] text-muted">
                 <span>&copy; {{ date('Y') }} {{ config('app.name') }} · Powered by Winner Devs</span>
                 <span class="inline-flex items-center gap-1.5"><span class="icon text-accent-light" data-icon="lock-keyhole"></span> Secure payments via SSLCommerz — bKash, Nagad, Rocket &amp; cards</span>

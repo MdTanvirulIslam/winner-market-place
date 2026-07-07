@@ -1,5 +1,5 @@
 <a href="{{ route('store.products.show', $product->slug) }}" class="s-card s-card-hover group block overflow-hidden">
-    <div class="relative aspect-[16/10] overflow-hidden" style="background:var(--bg-input);">
+    <div class="relative aspect-[16/10] overflow-hidden bg-input">
         <img src="{{ $product->coverUrl() }}" alt="{{ $product->name }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
         @if($product->isOnSale())
             <span class="s-badge-sale absolute left-3 top-3">SALE</span>
@@ -17,7 +17,7 @@
             </div>
         @endif
         <p class="mb-4 line-clamp-2 text-[13px] leading-5 text-muted">{{ $product->shortDescriptionText() }}</p>
-        <div class="flex items-center justify-between border-t pt-4" style="border-color:var(--s-glass-border);">
+        <div class="flex items-center justify-between border-t border-border pt-4">
             <div class="font-heading text-[16px] font-extrabold text-text">
                 @if($product->isOnSale())
                     <span class="mr-1 text-[13px] font-semibold text-muted line-through">{{ format_price($product->price) }}</span>{{ format_price($product->sale_price) }}
