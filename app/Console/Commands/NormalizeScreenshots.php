@@ -30,14 +30,17 @@ class NormalizeScreenshots extends Command
 
             $binary = $disk->get($image->path);
             $size = @getimagesizefromstring($binary);
+            $isWebp = strtolower(pathinfo($image->path, PATHINFO_EXTENSION)) === 'webp';
 
-            if ($size && $size[0] === Screenshot::WIDTH && $size[1] === Screenshot::HEIGHT) {
+            // Already WebP at the gallery size — nothing to do. Legacy .png/.jpg
+            // files are re-encoded even when correctly sized so the whole
+            // library ends up as WebP.
+            if ($isWebp && $size && $size[0] === Screenshot::WIDTH && $size[1] === Screenshot::HEIGHT) {
                 $skipped++;
                 continue;
             }
 
-            $extension = strtolower(pathinfo($image->path, PATHINFO_EXTENSION));
-            $output = Screenshot::normalize($binary, $extension);
+            $output = Screenshot::normalize($binary);
 
             if ($output === null) {
                 $this->error("FAILED {$image->path}");
@@ -45,8 +48,20 @@ class NormalizeScreenshots extends Command
                 continue;
             }
 
-            $disk->put($image->path, $output);
-            $this->info("OK {$image->path}");
+            // Screenshots are stored as WebP now; migrate legacy .png/.jpg
+            // files to a new .webp path and drop the old file.
+            if (strtolower(pathinfo($image->path, PATHINFO_EXTENSION)) !== 'webp') {
+                $oldPath = $image->path;
+                $newPath = dirname($image->path) . '/' . Screenshot::filename();
+                $disk->put($newPath, $output);
+                $disk->delete($oldPath);
+                $image->update(['path' => $newPath]);
+                $this->info("OK {$oldPath} -> {$newPath}");
+            } else {
+                $disk->put($image->path, $output);
+                $this->info("OK {$image->path}");
+            }
+
             $normalized++;
         }
 

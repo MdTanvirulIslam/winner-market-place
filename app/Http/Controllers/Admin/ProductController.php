@@ -11,7 +11,6 @@ use App\Support\Screenshot;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ProductController extends Controller
@@ -155,14 +154,13 @@ class ProductController extends Controller
         $sortOrder = (int) $product->images()->max('sort_order');
 
         foreach ($request->file('images') as $file) {
-            $extension = strtolower($file->extension());
-            $normalized = Screenshot::normalize($file->get(), $extension);
+            $normalized = Screenshot::normalize($file->get());
 
             if ($normalized !== null) {
-                $path = 'products/' . $product->id . '/' . Str::random(40) . '.' . $extension;
+                $path = 'products/' . $product->id . '/' . Screenshot::filename();
                 Storage::disk('public')->put($path, $normalized);
             } else {
-                // Undecodable or GD missing — keep the original upload.
+                // Undecodable or GD/WebP missing — keep the original upload.
                 $path = $file->store('products/' . $product->id, 'public');
             }
 

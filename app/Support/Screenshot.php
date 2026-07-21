@@ -2,10 +2,13 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Str;
+
 // Normalizes product screenshots so the storefront gallery never has to
 // crop or letterbox at render time: every stored image is exactly 16:9 at
 // WIDTH×HEIGHT. The whole source image is fitted (never cropped); any
 // leftover space is filled with a blurred, darkened copy of the image.
+// Everything is re-encoded to WebP.
 class Screenshot
 {
     public const WIDTH = 1280;
@@ -13,12 +16,13 @@ class Screenshot
     public const HEIGHT = 720;
 
     /**
-     * Returns the re-encoded binary, or null when GD is unavailable or the
-     * data cannot be decoded — callers keep the original file in that case.
+     * Returns the re-encoded WebP binary, or null when GD (with WebP support)
+     * is unavailable or the data cannot be decoded — callers keep the original
+     * file in that case.
      */
-    public static function normalize(string $binary, string $extension): ?string
+    public static function normalize(string $binary): ?string
     {
-        if (! function_exists('imagecreatefromstring')) {
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagewebp')) {
             return null;
         }
 
@@ -32,6 +36,16 @@ class Screenshot
         $sourceHeight = imagesy($source);
 
         $canvas = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
+
+        // Preserve transparency (e.g. PNGs with an alpha channel) instead of
+        // flattening it onto the default opaque black: start from a fully
+        // transparent canvas and keep alpha on save. Blending is turned back
+        // on so the blurred backdrop and the fitted image composite normally.
+        imagesavealpha($canvas, true);
+        imagealphablending($canvas, false);
+        $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+        imagefill($canvas, 0, 0, $transparent);
+        imagealphablending($canvas, true);
 
         // Fit the whole image inside the frame, upscaling small ones.
         $scale = min(self::WIDTH / $sourceWidth, self::HEIGHT / $sourceHeight);
@@ -49,16 +63,27 @@ class Screenshot
 
         ob_start();
 
-        $encoded = match (strtolower($extension)) {
-            'png' => imagepng($canvas, null, 6),
-            'webp' => function_exists('imagewebp') && imagewebp($canvas, null, 85),
-            default => imagejpeg($canvas, null, 85),
-        };
+        $encoded = imagewebp($canvas, null, 85);
 
         $output = ob_get_clean();
         imagedestroy($canvas);
 
         return $encoded && $output !== false && $output !== '' ? $output : null;
+    }
+
+    /**
+     * Builds a stored filename for a screenshot: the app's domain followed by
+     * a unique number and the .webp extension — e.g. "example_com_202607...webp".
+     */
+    public static function filename(): string
+    {
+        $domain = Str::slug(parse_url((string) config('app.url'), PHP_URL_HOST) ?: 'app', '_');
+
+        // Timestamp + random keeps it a unique "number"; a collision within a
+        // single product folder is effectively impossible.
+        $unique = now()->format('YmdHis') . random_int(1000, 9999);
+
+        return $domain . '_' . $unique . '.webp';
     }
 
     /**

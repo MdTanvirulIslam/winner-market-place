@@ -251,7 +251,9 @@ class CatalogTest extends TestCase
         $product = Product::where('slug', 'wide-banner')->firstOrFail();
         $image = $product->images()->first();
         $this->assertNotNull($image);
-        $this->assertStringEndsWith('.png', $image->path);
+        // Everything is stored as WebP, named "<domain>_<unique>.webp".
+        $this->assertStringEndsWith('.webp', $image->path);
+        $this->assertStringStartsWith('localhost_', basename($image->path));
 
         $size = getimagesizefromstring(Storage::disk('public')->get($image->path));
         $this->assertSame([\App\Support\Screenshot::WIDTH, \App\Support\Screenshot::HEIGHT], [$size[0], $size[1]]);
@@ -268,6 +270,11 @@ class CatalogTest extends TestCase
         $image = $product->images()->create(['path' => $path, 'sort_order' => 1]);
 
         $this->artisan('screenshots:normalize')->assertSuccessful();
+
+        // The command re-encodes to WebP and renames the legacy .jpg file.
+        $image->refresh();
+        $this->assertStringEndsWith('.webp', $image->path);
+        Storage::disk('public')->assertMissing($path);
 
         $size = getimagesizefromstring(Storage::disk('public')->get($image->path));
         $this->assertSame([\App\Support\Screenshot::WIDTH, \App\Support\Screenshot::HEIGHT], [$size[0], $size[1]]);
